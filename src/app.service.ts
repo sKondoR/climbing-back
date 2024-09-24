@@ -13,16 +13,12 @@ function timeout(ms) {
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<Array<string>> {
-    const browser = await puppeteer.launch(
-      process.env.NODE_ENV === 'dev'
-        ? {
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
-          }
-        : {},
-    );
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
     const page = await browser.newPage();
     let result = [];
     let doRequests = true;
