@@ -5,18 +5,16 @@ const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer');
 
 const BUTTON_SELECTOR = '.load-more';
-
-function timeout(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<Array<string>> {
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath:
+        process.env.NODE_ENV === 'dev'
+          ? await chromium.executablePath()
+          : undefined,
       headless: chromium.headless,
     });
     const page = await browser.newPage();
@@ -49,7 +47,6 @@ export class AppService {
         await button[0].click();
         await page.waitForSelector('#wall', { visible: true });
         await page.waitForSelector('#wall', { visible: false });
-        await timeout(1000);
         const data = await getRoutes();
         doRequests = data.length > result.length;
         result = data;
