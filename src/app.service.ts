@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import chrome from 'chrome-aws-lambda';
-import puppeteer from 'puppeteer-core';
+// import puppeteer from 'puppeteer-core';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+import puppeteer = require('puppeteer-core');
 
 // const LOCAL_CHROME_EXECUTABLE =
 // 'C:/Users/Sergey_Kondrashin/.cache/puppeteer/chrome/win64-129.0.6668.58/chrome-win64/chrome.exe';
@@ -18,14 +20,21 @@ export class AppService {
           headless: chrome.headless,
         }
       : {
-          args: [],
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-gpu',
+            '--ignore-certificate-errors',
+            '--disable-extensions',
+          ],
           executablePath: process.platform.includes('win')
-            ? 'C:/Program Files/Google/Chrome/Application/chrome.exe'
+            ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
             : process.platform === 'linux'
               ? '/usr/bin/google-chrome'
               : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
         };
 
+    // return [process.env.AWS_REGION, `${process.platform.includes('win')}`];
     // const executablePath = process.env.NODE_ENV.includes('dev')
     //   ? LOCAL_CHROME_EXECUTABLE
     //   : await chromium?.executablePath();
