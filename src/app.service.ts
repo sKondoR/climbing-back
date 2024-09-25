@@ -18,9 +18,10 @@ const electron = require('electron');
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<RouteItems> {
-    const electronPath = electron
-      .replace('electron.exe', '')
-      .replace('electron', '');
+    const lastIndex = electron.lastIndexOf('electron');
+    const electronPath = process.env.NODE_ENV?.includes('dev')
+      ? electron
+      : electron.substring(0, lastIndex);
     console.log('Your App Path: + ' + electronPath);
     const nightmare = Nightmare({
       // eslint-disable-next-line @typescript-eslint/no-require-imports
