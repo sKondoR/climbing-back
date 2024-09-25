@@ -4,7 +4,13 @@
         {
             "src": "src/main.ts",
             "use": "@vercel/node",
-            "config": { "includeFiles": ["dist/**"] }
+            "config": { "includeFiles": ["dist/**"] },
+            "functions": {
+                "src/*.js": { "maxDuration": 60 },
+                "src/*.ts": { "maxDuration": 60 },
+                "controllers/*.js": { "maxDuration": 60 },
+                "middleware/**/*.js": { "maxDuration": 60 }
+              }
         }
     ],
     "routes": [
