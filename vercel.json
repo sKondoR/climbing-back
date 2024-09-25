@@ -4,13 +4,7 @@
         {
             "src": "src/main.ts",
             "use": "@vercel/node",
-            "config": { "includeFiles": ["dist/**"] },
-            "functions": {
-                "src/*.js": { "maxDuration": 60 },
-                "src/*.ts": { "maxDuration": 60 },
-                "controllers/*.js": { "maxDuration": 60 },
-                "middleware/**/*.js": { "maxDuration": 60 }
-              }
+            "config": { "includeFiles": ["dist/**"] }
         }
     ],
     "routes": [
@@ -19,5 +13,9 @@
             "dest": "src/main.ts",
             "methods": ["GET", "POST", "PUT", "DELETE"]
         }
-    ]
+    ],
+    "functions": {
+        "*.js": { "maxDuration": 60 },
+        "*.ts": { "maxDuration": 60 }
+    }
 }
