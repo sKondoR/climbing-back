@@ -17,10 +17,15 @@ export class AppService {
   async getClimberById(id: string): Promise<Array<string>> {
     const options = process.env.AWS_REGION
       ? {
-          args: chromium.args,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-gpu',
+            '--ignore-certificate-errors',
+            '--disable-extensions',
+          ],
           defaultViewport: chromium.defaultViewport,
           executablePath: await chromium.executablePath(),
-          headless: chromium.headless,
         }
       : {
           args: [
