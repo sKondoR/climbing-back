@@ -17,14 +17,22 @@ export class AppService {
   async getClimberById(id: string): Promise<Array<string>> {
     const options = process.env.AWS_REGION
       ? {
+          ignoreHTTPSErrors: true,
+          defaultViewport: {
+            width: 1920,
+            height: 1080,
+          },
           args: [
+            '--window-size=1920,1080',
+            '--disable-gpu',
+            '--disable-features=IsolateOrigins,site-per-process',
+            '--disable-blink-features=AutomationControlled',
+            '--blink-settings=imagesEnabled=true',
+            '--enable-features=NetworkService',
+            '--disable-dev-shm-usage',
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-gpu',
-            '--ignore-certificate-errors',
-            '--disable-extensions',
           ],
-          defaultViewport: chromium.defaultViewport,
           executablePath: await chromium.executablePath(),
         }
       : {
