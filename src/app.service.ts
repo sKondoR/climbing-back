@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const chromium = require('@sparticuz/chromium');
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 
 chromium.setHeadlessMode = true;
 const LOCAL_CHROME_EXECUTABLE =
@@ -12,11 +12,19 @@ const BUTTON_SELECTOR = '.load-more';
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<Array<string>> {
-    const executablePath =
-      (await chromium?.executablePath) || LOCAL_CHROME_EXECUTABLE;
+    const executablePath = process.env.NODE_ENV.includes('dev')
+      ? LOCAL_CHROME_EXECUTABLE
+      : await chromium?.executablePath();
 
     const browser = await puppeteer.launch({
-      args: chromium.args,
+      // args: chromium.args,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-gpu',
+        '--ignore-certificate-errors',
+        '--disable-extensions',
+      ],
       defaultViewport: chromium.defaultViewport,
       executablePath,
       headless: chromium.headless,
