@@ -4,8 +4,6 @@ import { RouteItems } from './routes.interfaces';
 // import puppeteer from 'puppeteer-core';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const Nightmare = require('nightmare');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const electron = require('electron');
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 
@@ -18,11 +16,6 @@ const electron = require('electron');
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<RouteItems> {
-    const lastIndex = electron.lastIndexOf('electron');
-    const electronPath = process.env.NODE_ENV?.includes('dev')
-      ? electron
-      : electron.substring(0, lastIndex);
-    console.log('Your App Path: + ' + electronPath.executablePath);
     const nightmare = Nightmare();
     let result = [];
     await nightmare
