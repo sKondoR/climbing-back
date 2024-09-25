@@ -15,16 +15,19 @@ export class AppService {
     const executablePath = process.env.NODE_ENV.includes('dev')
       ? LOCAL_CHROME_EXECUTABLE
       : await chromium?.executablePath();
+    const args = process.env.NODE_ENV.includes('dev')
+      ? [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-gpu',
+          '--ignore-certificate-errors',
+          '--disable-extensions',
+        ]
+      : chromium.args;
 
     const browser = await puppeteer.launch({
       // args: chromium.args,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-gpu',
-        '--ignore-certificate-errors',
-        '--disable-extensions',
-      ],
+      args,
       defaultViewport: chromium.defaultViewport,
       executablePath,
       headless: chromium.headless,
