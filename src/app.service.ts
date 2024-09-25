@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 
 // import puppeteer from 'puppeteer-core';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const puppeteer = require('puppeteer');
 import puppeteerCore from 'puppeteer-core';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const chromium = require('@sparticuz/chromium');
