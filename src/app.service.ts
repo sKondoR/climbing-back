@@ -22,6 +22,7 @@ export class AppService {
     const electronPath = process.env.NODE_ENV?.includes('dev')
       ? electron
       : electron.substring(0, lastIndex);
+    console.log('Your nightmare Path: + ' + Nightmare);
     console.log('Your App Path: + ' + electronPath);
     const nightmare = Nightmare({
       // eslint-disable-next-line @typescript-eslint/no-require-imports
