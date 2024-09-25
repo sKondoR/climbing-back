@@ -6,7 +6,6 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prebuild": "npx @puppeteer/browsers install chrome@stable",
     "build": "set AWS_LAMBDA_FUNCTION_NAME=true&&nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "set NODE_ENV=dev&&nest start",
@@ -24,13 +23,8 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
-    "@sparticuz/chromium": "^127.0.0",
-    "@sparticuz/chromium-min": "^127.0.0",
-    "cheerio": "^1.0.0",
     "electron": "^2.0.18",
     "nightmare": "^3.0.2",
-    "puppeteer": "23.1.1",
-    "puppeteer-core": "23.1.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
