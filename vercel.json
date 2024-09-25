@@ -8,8 +8,8 @@
         }
     ],
     "functions": {
-        "src/*.ts": {
-          "maxDuration": 60
+        "api/src/*.js": {
+            "maxDuration": 30
         }
     }
 }
