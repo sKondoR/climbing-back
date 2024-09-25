@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "postinstall": "npm install --platform=linux64 electron",
     "build": "set AWS_LAMBDA_FUNCTION_NAME=true&&nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "set NODE_ENV=dev&&nest start",
