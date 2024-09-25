@@ -1,24 +1,26 @@
 import { Injectable } from '@nestjs/common';
 
-import chrome from 'chrome-aws-lambda';
 // import puppeteer from 'puppeteer-core';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-import puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const chromium = require('@sparticuz/chromium');
 
 // const LOCAL_CHROME_EXECUTABLE =
 // 'C:/Users/Sergey_Kondrashin/.cache/puppeteer/chrome/win64-129.0.6668.58/chrome-win64/chrome.exe';
 // 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 // const BUTTON_SELECTOR = '.load-more';
+chromium.setGraphicsMode = false;
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<Array<string>> {
     const options = process.env.AWS_REGION
       ? {
-          args: chrome.args,
-          ignoreDefaultArgs: ['--disable-extensions'],
-          executablePath: await chrome.executablePath,
-          headless: chrome.headless,
+          args: chromium.args,
+          defaultViewport: chromium.defaultViewport,
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
         }
       : {
           args: [
