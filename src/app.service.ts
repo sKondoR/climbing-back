@@ -1,37 +1,45 @@
 import { Injectable } from '@nestjs/common';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const chromium = require('@sparticuz/chromium');
+
+import chrome from 'chrome-aws-lambda';
 import puppeteer from 'puppeteer-core';
 
-chromium.setHeadlessMode = true;
-const LOCAL_CHROME_EXECUTABLE =
-  // 'C:/Users/Sergey_Kondrashin/.cache/puppeteer/chrome/win64-129.0.6668.58/chrome-win64/chrome.exe';
-  'C:/Program Files/Google/Chrome/Application/chrome.exe';
+// const LOCAL_CHROME_EXECUTABLE =
+// 'C:/Users/Sergey_Kondrashin/.cache/puppeteer/chrome/win64-129.0.6668.58/chrome-win64/chrome.exe';
+// 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 // const BUTTON_SELECTOR = '.load-more';
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<Array<string>> {
-    const executablePath = process.env.NODE_ENV.includes('dev')
-      ? LOCAL_CHROME_EXECUTABLE
-      : await chromium?.executablePath();
-    const args = process.env.NODE_ENV.includes('dev')
-      ? [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-gpu',
-          '--ignore-certificate-errors',
-          '--disable-extensions',
-        ]
-      : chromium.args;
+    const options = process.env.AWS_REGION
+      ? {
+          args: chrome.args,
+          executablePath: await chrome.executablePath,
+          headless: chrome.headless,
+        }
+      : {
+          args: [],
+          executablePath: process.platform.includes('win')
+            ? 'C:/Program Files/Google/Chrome/Application/chrome.exe'
+            : process.platform === 'linux'
+              ? '/usr/bin/google-chrome'
+              : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        };
 
-    const browser = await puppeteer.launch({
-      // args: chromium.args,
-      args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath,
-      headless: chromium.headless,
-    });
+    // const executablePath = process.env.NODE_ENV.includes('dev')
+    //   ? LOCAL_CHROME_EXECUTABLE
+    //   : await chromium?.executablePath();
+    // const args = process.env.NODE_ENV.includes('dev')
+    //   ? [
+    //       '--no-sandbox',
+    //       '--disable-setuid-sandbox',
+    //       '--disable-gpu',
+    //       '--ignore-certificate-errors',
+    //       '--disable-extensions',
+    //     ]
+    //   : chromium.args;
+
+    const browser = await puppeteer.launch(options);
     const page = await browser.newPage();
     let result = [];
     // let doRequests = true;
