@@ -19,8 +19,8 @@ const electron = require('electron');
 export class AppService {
   async getClimberById(id: string): Promise<RouteItems> {
     const electronPath = electron
-      .replace('electon.exe', '')
-      .replace('electon', '');
+      .replace('electron.exe', '')
+      .replace('electron', '');
     console.log('Your App Path: + ' + electronPath);
     const nightmare = Nightmare({
       // eslint-disable-next-line @typescript-eslint/no-require-imports
