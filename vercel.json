@@ -8,8 +8,9 @@
         }
     ],
     "functions": {
-        "api/src/*.js": {
-            "maxDuration": 30
+        "src/*.ts": {
+            "memory": 3008,
+            "maxDuration": 60
         }
     }
 }
