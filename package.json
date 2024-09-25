@@ -26,6 +26,8 @@
     "@nestjs/platform-express": "^10.0.0",
     "@sparticuz/chromium": "^127.0.0",
     "@sparticuz/chromium-min": "^127.0.0",
+    "cheerio": "^1.0.0",
+    "nightmare": "^3.0.2",
     "puppeteer": "23.1.1",
     "puppeteer-core": "23.1.1",
     "reflect-metadata": "^0.2.0",
