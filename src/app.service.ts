@@ -4,6 +4,7 @@ import { RouteItems } from './routes.interfaces';
 // import puppeteer from 'puppeteer-core';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const Nightmare = require('nightmare');
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 
 // const LOCAL_CHROME_EXECUTABLE =
@@ -15,7 +16,10 @@ const Nightmare = require('nightmare');
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<RouteItems> {
-    const nightmare = Nightmare();
+    const nightmare = Nightmare({
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      electronPath: require('electron'),
+    });
     let result = [];
     await nightmare
       .goto(`https://www.allclimb.com/ru/climber/${id}`)
