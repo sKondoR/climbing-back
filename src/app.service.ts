@@ -16,6 +16,7 @@ export class AppService {
     const options = process.env.AWS_REGION
       ? {
           args: chrome.args,
+          ignoreDefaultArgs: ['--disable-extensions'],
           executablePath: await chrome.executablePath,
           headless: chrome.headless,
         }
