@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const puppeteer = require('puppeteer');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const chromium = require('@sparticuz/chromium');
+const chromium = require('@sparticuz/chromium-min');
 
 // const LOCAL_CHROME_EXECUTABLE =
 // 'C:/Users/Sergey_Kondrashin/.cache/puppeteer/chrome/win64-129.0.6668.58/chrome-win64/chrome.exe';
@@ -24,18 +24,12 @@ export class AppService {
               height: 1080,
             },
             args: [
-              '--window-size=1920,1080',
-              '--disable-gpu',
-              '--disable-features=IsolateOrigins,site-per-process',
-              '--disable-blink-features=AutomationControlled',
-              '--blink-settings=imagesEnabled=true',
-              '--enable-features=NetworkService',
-              '--disable-dev-shm-usage',
-              '--no-sandbox',
-              '--disable-setuid-sandbox',
+              ...chromium.args,
+              '--hide-scrollbars',
+              '--disable-web-security',
             ],
             executablePath: await chromium.executablePath(),
-            headless: false,
+            headless: chromium.headless,
           }
         : {
             args: [
