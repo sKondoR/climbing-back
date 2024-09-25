@@ -1,24 +1,22 @@
 import { Injectable } from '@nestjs/common';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const chromium = require('@sparticuz/chromium');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const puppeteer = require('puppeteer');
+import edgeChromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer-core';
 
-chromium.setHeadlessMode = true;
-chromium.setGraphicsMode = false;
+const LOCAL_CHROME_EXECUTABLE =
+  // 'C:/Users/Sergey_Kondrashin/.cache/puppeteer/chrome/win64-129.0.6668.58/chrome-win64/chrome.exe';
+  'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 const BUTTON_SELECTOR = '.load-more';
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<Array<string>> {
+    const executablePath =
+      (await edgeChromium?.executablePath) || LOCAL_CHROME_EXECUTABLE;
+
     const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath:
-        process.env.NODE_ENV === 'dev'
-          ? await chromium.executablePath()
-          : undefined,
-      headless: chromium.headless,
+      executablePath,
+      args: edgeChromium?.args,
+      headless: false,
     });
     const page = await browser.newPage();
     let result = [];
