@@ -19,6 +19,9 @@ export class AppService {
     const nightmare = Nightmare({
       gotoTimeout: 1200000,
       show: true,
+      webPreferences: {
+        images: false,
+      },
       // eslint-disable-next-line prettier/prettier, @typescript-eslint/no-require-imports
       // electronPath: require('./node_modules/electron')
     });
