@@ -23,7 +23,7 @@ export class AppService {
         images: false,
       },
       // eslint-disable-next-line prettier/prettier, @typescript-eslint/no-require-imports
-      // electronPath: require('./node_modules/electron')
+      electronPath: require('./node_modules/electron')
     });
     let result = [];
     await nightmare
