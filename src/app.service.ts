@@ -16,7 +16,12 @@ const Nightmare = require('nightmare');
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<RouteItems> {
-    const nightmare = Nightmare();
+    const nightmare = Nightmare({
+      gotoTimeout: 1200000,
+      show: true,
+      // eslint-disable-next-line prettier/prettier, @typescript-eslint/no-require-imports
+      // electronPath: require('./node_modules/electron')
+    });
     let result = [];
     await nightmare
       .goto(`https://www.allclimb.com/ru/climber/${id}`)
