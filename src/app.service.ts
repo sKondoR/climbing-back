@@ -16,9 +16,11 @@ const Nightmare = require('nightmare');
 @Injectable()
 export class AppService {
   async getClimberById(id: string): Promise<RouteItems> {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    console.log('>>> ' + require('../node_modules/electron'));
     const nightmare = Nightmare({
       gotoTimeout: 1200000,
-      show: true,
+      show: false,
       webPreferences: {
         images: false,
       },
