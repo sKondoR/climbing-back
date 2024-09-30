@@ -17,7 +17,14 @@ export class Climber {
     array: false,
     default: () => "'[]'",
   })
-  routes: IRoute[];
+  leads: IRoute[];
+
+  @Column({
+    type: 'jsonb',
+    array: false,
+    default: () => "'[]'",
+  })
+  boulders: IRoute[];
 
   @Column()
   updatedAt: string;

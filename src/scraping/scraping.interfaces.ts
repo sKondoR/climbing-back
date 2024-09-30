@@ -2,5 +2,6 @@ import { IRoute } from '../climbers/climbers.interfaces';
 
 export interface IClimberParse {
   name: string | null;
-  routes: IRoute[] | null;
+  leades: IRoute[] | null;
+  boulders: IRoute[] | null;
 }

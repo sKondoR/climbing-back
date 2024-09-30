@@ -14,10 +14,12 @@ export class ClimbersService {
   async create(createClimberDto: CreateClimberDto): Promise<Climber> {
     const climber = new Climber();
     climber.id = createClimberDto.id;
+    climber.name = createClimberDto.name;
     climber.allClimbId = createClimberDto.allClimbId;
-    climber.routes = createClimberDto.routes;
+    climber.leads = createClimberDto.leads;
+    climber.boulders = createClimberDto.boulders;
     climber.updatedAt = createClimberDto.updatedAt;
-    console.log('HERE!', climber, createClimberDto);
+    console.log('createClimberDto: ', createClimberDto);
     return await this.climbersRepository.save(climber);
   }
 

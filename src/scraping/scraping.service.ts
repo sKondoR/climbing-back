@@ -7,10 +7,8 @@ import {
   ALLCLIMB_URL,
   LOCAL_CHROME_EXECUTABLE,
   BUTTON_MORE_SELECTOR,
-  NAME_BOX_SELECTOR,
-  ROUTES_SELECTOR,
 } from './scraping.constants';
-import { parseRoute } from './scraping.utils';
+import { filterRoutes } from './scraping.utils';
 
 chromium.setHeadlessMode = false;
 
@@ -41,14 +39,24 @@ export class ScrapingService {
       await page.goto(`${ALLCLIMB_URL}/${id}`);
 
       const button = await page.$$(BUTTON_MORE_SELECTOR);
-      const name = await page.$eval(NAME_BOX_SELECTOR, (element) => {
-        return element.textContent.trim();
-      });
-      console.log('button: ', button.length);
+      const climberName = await page.$$eval(
+        '.climber-info-block > p',
+        (node) => {
+          return (<Element>node[0]).textContent;
+        },
+      );
       const getRoutes = async () => {
-        const data = await page.$$eval(ROUTES_SELECTOR, (elements) =>
-          elements.map(parseRoute),
-        );
+        const data = await page.$$eval('.news-preview', (elements) => {
+          return elements.map((element) => ({
+            isBoulder: element.textContent.includes('Боулдер'),
+            grade: element.querySelector('h4').textContent.trim(),
+            // '.news-preview-title'
+            name: element.querySelector('b').textContent.trim(),
+            date: element
+              .querySelector('.news-preview-date')
+              .textContent.trim(),
+          }));
+        });
         return data;
       };
 
@@ -64,9 +72,10 @@ export class ScrapingService {
       }
 
       await browser.close();
+      console.log('result>>> ');
       return {
-        name,
-        routes: result,
+        name: climberName.split(/\n/)[0],
+        ...filterRoutes(result),
       };
     } catch (error) {
       console.error('Error while scraping job listings:', error);

@@ -17,7 +17,6 @@ export class ClimbersController {
 
   @Post()
   create(@Body() createClimberDto: CreateClimberDto) {
-    console.log('controller', createClimberDto);
     return this.climbersService.create(createClimberDto);
   }
 

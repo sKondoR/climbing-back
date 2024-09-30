@@ -3,6 +3,7 @@ export class CreateClimberDto {
   id: number;
   allClimbId: number | null;
   name: string | null;
-  routes: IRoute[] | null;
+  leads: IRoute[] | null;
+  boulders: IRoute[] | null;
   updatedAt: string | null;
 }
