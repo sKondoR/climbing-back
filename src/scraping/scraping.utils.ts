@@ -11,6 +11,11 @@ export const parseRoute = (el) => ({
   date: el.querySelector(ROUTE_DATE_SELECTOR).textContent.trim(),
 });
 
+export const parseClimberName = (text) => {
+  const result = text.replaceAll('  ', '');
+  return result.slice(0, result.indexOf('\n'));
+};
+
 const findSameRoute = (arr, route) =>
   arr.some((a) => a.name === route.name && a.grade === route.grade);
 

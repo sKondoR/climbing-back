@@ -8,7 +8,7 @@ import {
   LOCAL_CHROME_EXECUTABLE,
   BUTTON_MORE_SELECTOR,
 } from './scraping.constants';
-import { filterRoutes } from './scraping.utils';
+import { filterRoutes, parseClimberName } from './scraping.utils';
 
 chromium.setHeadlessMode = false;
 
@@ -18,6 +18,7 @@ const delay = (time) => {
   });
 };
 
+const LOAD_DELAY = 1000;
 @Injectable()
 export class ScrapingService {
   async getClimberById(id: string): Promise<IClimberParse> {
@@ -41,10 +42,11 @@ export class ScrapingService {
       const button = await page.$$(BUTTON_MORE_SELECTOR);
       const climberName = await page.$$eval(
         '.climber-info-block > p',
-        (node) => {
-          return (<Element>node[0]).textContent;
+        (elements) => {
+          return elements[0].textContent.trim();
         },
       );
+
       const getRoutes = async () => {
         const data = await page.$$eval('.news-preview', (elements) => {
           return elements.map((element) => ({
@@ -65,16 +67,15 @@ export class ScrapingService {
         await button[0].click();
         await page.waitForSelector('#wall', { visible: true });
         await page.waitForSelector('#wall', { visible: false });
-        await delay(2000);
+        await delay(LOAD_DELAY);
         const data = await getRoutes();
         doRequests = data.length > result.length;
         result = data;
       }
 
       await browser.close();
-      console.log('result>>> ');
       return {
-        name: climberName.split(/\n/)[0],
+        name: parseClimberName(climberName),
         ...filterRoutes(result),
       };
     } catch (error) {
