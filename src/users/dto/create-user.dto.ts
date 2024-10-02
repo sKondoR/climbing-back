@@ -5,4 +5,5 @@ export class CreateUserDto {
   name: string | null;
   team: IAllClimber[] | null;
   friends: IAllClimber[] | null;
+  pro: IAllClimber[] | null;
 }

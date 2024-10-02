@@ -4,6 +4,7 @@ export interface IUser {
   name: string | null;
   team: IAllClimber[] | null;
   friends: IAllClimber[] | null;
+  pro: IAllClimber[] | null;
 }
 
 export interface IAllClimber {

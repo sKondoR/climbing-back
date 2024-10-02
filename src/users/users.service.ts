@@ -20,6 +20,7 @@ export class UsersService {
     climber.allClimbId = createUserDto.allClimbId;
     climber.team = createUserDto.team;
     climber.friends = createUserDto.friends;
+    climber.pro = createUserDto.pro;
     return await this.usersRepository.save(climber);
   }
 
@@ -35,6 +36,7 @@ export class UsersService {
       name: 'Виктор Кондрашин',
       team: TEAM,
       friends: FRIENDS,
+      pro: [],
     };
   }
 

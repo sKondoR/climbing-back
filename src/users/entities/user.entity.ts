@@ -25,4 +25,11 @@ export class User {
     default: () => "'[]'",
   })
   friends: IAllClimber[];
+
+  @Column({
+    type: 'jsonb',
+    array: false,
+    default: () => "'[]'",
+  })
+  pro: IAllClimber[];
 }
