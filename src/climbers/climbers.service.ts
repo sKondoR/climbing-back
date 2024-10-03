@@ -4,7 +4,7 @@ import { UpdateClimberDto } from './dto/update-climber.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Climber } from './entities/climber.entity';
 import { Repository } from 'typeorm';
-
+import { getNow } from './climbers.utils';
 @Injectable()
 export class ClimbersService {
   constructor(
@@ -18,7 +18,7 @@ export class ClimbersService {
     climber.allClimbId = createClimberDto.allClimbId;
     climber.leads = createClimberDto.leads;
     climber.boulders = createClimberDto.boulders;
-    climber.updatedAt = new Date().toLocaleDateString('ru-RU');
+    climber.updatedAt = getNow();
     return await this.climbersRepository.save(climber);
   }
 
@@ -38,13 +38,12 @@ export class ClimbersService {
     if (!user) {
       throw new NotFoundException('Climber not found');
     }
-    await this.climbersRepository.update(
-      { id },
-      {
-        ...updateClimberDto,
-        updatedAt: new Date().toLocaleDateString('ru-RU'),
-      },
-    );
+    user.name = updateClimberDto.name;
+    user.allClimbId = updateClimberDto.allClimbId;
+    user.leads = updateClimberDto.leads;
+    user.boulders = updateClimberDto.boulders;
+    user.updatedAt = getNow();
+    await this.climbersRepository.update({ id }, user);
     return user;
   }
 

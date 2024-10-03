@@ -18,7 +18,7 @@ const delay = (time) => {
   });
 };
 
-const LOAD_DELAY = 1000;
+const LOAD_DELAY = 2000;
 @Injectable()
 export class ScrapingService {
   async getClimberById(id: string): Promise<IClimberParse> {
@@ -49,13 +49,19 @@ export class ScrapingService {
 
       const getRoutes = async () => {
         const data = await page.$$eval('.news-preview', (elements) => {
-          return elements.map((el) => ({
-            isBoulder: el.textContent.includes('Боулдер'),
-            isTopRope: el.textContent.includes('Верхняя страховка.'),
-            grade: el.querySelector('h4').textContent.trim(),
-            name: el.querySelector('b').textContent.trim(),
-            date: el.querySelector('.news-preview-date').textContent.trim(),
-          }));
+          return elements.map((el) => {
+            const allText = el
+              .querySelector('.news-preview-title')
+              .textContent.trim();
+            return {
+              isBoulder: allText.includes('Боулдер'),
+              isTopRope: allText.includes('Верхняя страховка.'),
+              grade: el.querySelector('h4').textContent.trim(),
+              name: el.querySelector('b').textContent.trim(),
+              date: el.querySelector('.news-preview-date').textContent.trim(),
+              text: allText,
+            };
+          });
         });
         return data;
       };
