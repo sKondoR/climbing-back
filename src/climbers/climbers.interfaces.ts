@@ -1,5 +1,6 @@
 export interface IRoute {
   isBoulder: boolean;
+  isTopRope: boolean;
   grade: string;
   name: string;
   date: string;

@@ -5,5 +5,4 @@ export class CreateClimberDto {
   name: string | null;
   leads: IRoute[] | null;
   boulders: IRoute[] | null;
-  updatedAt: string | null;
 }

@@ -18,8 +18,7 @@ export class ClimbersService {
     climber.allClimbId = createClimberDto.allClimbId;
     climber.leads = createClimberDto.leads;
     climber.boulders = createClimberDto.boulders;
-    climber.updatedAt = createClimberDto.updatedAt;
-    console.log('createClimberDto: ', createClimberDto);
+    climber.updatedAt = new Date().toLocaleDateString('ru-RU');
     return await this.climbersRepository.save(climber);
   }
 
@@ -39,7 +38,13 @@ export class ClimbersService {
     if (!user) {
       throw new NotFoundException('Climber not found');
     }
-    await this.climbersRepository.update({ id }, updateClimberDto);
+    await this.climbersRepository.update(
+      { id },
+      {
+        ...updateClimberDto,
+        updatedAt: new Date().toLocaleDateString('ru-RU'),
+      },
+    );
     return user;
   }
 

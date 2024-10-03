@@ -49,14 +49,12 @@ export class ScrapingService {
 
       const getRoutes = async () => {
         const data = await page.$$eval('.news-preview', (elements) => {
-          return elements.map((element) => ({
-            isBoulder: element.textContent.includes('Боулдер'),
-            grade: element.querySelector('h4').textContent.trim(),
-            // '.news-preview-title'
-            name: element.querySelector('b').textContent.trim(),
-            date: element
-              .querySelector('.news-preview-date')
-              .textContent.trim(),
+          return elements.map((el) => ({
+            isBoulder: el.textContent.includes('Боулдер'),
+            isTopRope: el.textContent.includes('Верхняя страховка.'),
+            grade: el.querySelector('h4').textContent.trim(),
+            name: el.querySelector('b').textContent.trim(),
+            date: el.querySelector('.news-preview-date').textContent.trim(),
           }));
         });
         return data;
