@@ -1,4 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
+
 import { ScrapingService } from './scraping.service';
 import { IClimberParse } from './scraping.interfaces';
 

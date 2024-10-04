@@ -7,9 +7,10 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ClimbersService } from './climbers.service';
+
 import { CreateClimberDto } from './dto/create-climber.dto';
 import { UpdateClimberDto } from './dto/update-climber.dto';
+import { ClimbersService } from './climbers.service';
 
 @Controller('climbers')
 export class ClimbersController {

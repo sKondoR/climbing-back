@@ -1,18 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateClimberDto } from './dto/create-climber.dto';
 import { UpdateClimberDto } from './dto/update-climber.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Climber } from './entities/climber.entity';
-import { Repository } from 'typeorm';
+import { ClimberEntity } from './entities/climbers.entities';
 import { getNow } from './climbers.utils';
 @Injectable()
 export class ClimbersService {
   constructor(
-    @InjectRepository(Climber) private climbersRepository: Repository<Climber>,
+    @InjectRepository(ClimberEntity)
+    private climbersRepository: Repository<ClimberEntity>,
   ) {}
 
-  async create(createClimberDto: CreateClimberDto): Promise<Climber> {
-    const climber = new Climber();
+  async create(createClimberDto: CreateClimberDto): Promise<ClimberEntity> {
+    const climber = new ClimberEntity();
     climber.id = createClimberDto.id;
     climber.name = createClimberDto.name;
     climber.allClimbId = createClimberDto.allClimbId;
@@ -22,18 +24,18 @@ export class ClimbersService {
     return await this.climbersRepository.save(climber);
   }
 
-  async findAll(): Promise<Climber[]> {
+  async findAll(): Promise<ClimberEntity[]> {
     return await this.climbersRepository.find();
   }
 
-  async findOne(id: number): Promise<Climber> {
+  async findOne(id: number): Promise<ClimberEntity> {
     return await this.climbersRepository.findOne({ where: { id } });
   }
 
   async update(
     id: number,
     updateClimberDto: UpdateClimberDto,
-  ): Promise<Climber> {
+  ): Promise<ClimberEntity> {
     const user = await this.climbersRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('Climber not found');

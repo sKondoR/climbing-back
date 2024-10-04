@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { ClimberEntity } from './entities/climbers.entities';
 import { ClimbersService } from './climbers.service';
 import { ClimbersController } from './climbers.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Climber } from './entities/climber.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Climber])],
+  imports: [TypeOrmModule.forFeature([ClimberEntity])],
   controllers: [ClimbersController],
   providers: [ClimbersService],
 })

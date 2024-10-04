@@ -1,16 +1,28 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { IAllClimber } from '../users.interfaces';
+import { IAllClimber, IGrant } from '../users.interfaces';
 
-@Entity() // Declares the class as an entity
-export class User {
+@Entity()
+export class UserEntity {
   @PrimaryGeneratedColumn() // Auto-incremented primary key
   id: number;
+
+  @Column()
+  grant: IGrant;
+
+  @Column()
+  password: string;
 
   @Column()
   allClimbId: number;
 
   @Column()
+  vk_id: number;
+
+  @Column()
   name: string;
+
+  @Column()
+  avatar_url: string;
 
   @Column({
     type: 'jsonb',

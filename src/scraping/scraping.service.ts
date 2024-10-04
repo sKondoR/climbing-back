@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { IClimberParse } from './scraping.interfaces';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const chromium = require('@sparticuz/chromium');
 import puppeteer from 'puppeteer';
+
+import { IClimberParse } from './scraping.interfaces';
 import {
   ALLCLIMB_URL,
   LOCAL_CHROME_EXECUTABLE,
@@ -19,7 +19,6 @@ const delay = (time) => {
 };
 
 const LOAD_DELAY = 2000;
-@Injectable()
 export class ScrapingService {
   async getClimberById(id: string): Promise<IClimberParse> {
     const executablePath =

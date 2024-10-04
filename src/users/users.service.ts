@@ -1,26 +1,33 @@
+import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
+// import { ConfigService, InjectConfig } from '@nestjs/config';
+import { TEAM, FRIENDS } from './users.constants';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { TEAM, FRIENDS } from './users.constants';
 import { IUser } from './users.interfaces';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>,
-  ) {}
+  private saltRounds: number;
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const climber = new User();
-    climber.id = createUserDto.id;
+  constructor(
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
+    // @InjectConfig() private readonly config: ConfigService,
+  ) {
+    // this.saltRounds = config.get('app.salt_rounds', 10);
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const climber = new UserEntity();
+    climber.password = createUserDto.password
+      ? await this.getHash(createUserDto.password)
+      : null;
     climber.name = createUserDto.name;
     climber.allClimbId = createUserDto.allClimbId;
-    climber.team = createUserDto.team;
-    climber.friends = createUserDto.friends;
-    climber.pro = createUserDto.pro;
     return await this.usersRepository.save(climber);
   }
 
@@ -29,10 +36,14 @@ export class UsersService {
   }
 
   // hardcoded first user
-  async findOne(id: number): Promise<IUser> {
+  async findById(id: number): Promise<IUser> {
     return {
       id,
       allClimbId: 35292,
+      grant: 0,
+      password: null,
+      vk_id: null,
+      avatar_url: null,
       name: 'Виктор Кондрашин',
       team: TEAM,
       friends: FRIENDS,
@@ -40,7 +51,15 @@ export class UsersService {
     };
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async findByAllClimbId(allClimbId: number): Promise<UserEntity | null> {
+    return await this.usersRepository.findOne({ where: { allClimbId } });
+  }
+
+  async findByVkId(vk_id: number): Promise<UserEntity | null> {
+    return await this.usersRepository.findOne({ where: { vk_id } });
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -51,5 +70,13 @@ export class UsersService {
 
   async remove(id: number): Promise<void> {
     await this.usersRepository.delete(id);
+  }
+
+  async getHash(password: string): Promise<string> {
+    return await bcrypt.hash(password, this.saltRounds);
+  }
+
+  async compareHash(password: string, hash: string): Promise<boolean> {
+    return await bcrypt.compare(password, hash);
   }
 }
