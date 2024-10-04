@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { CreateClimberDto } from './dto/create-climber.dto';
 import { UpdateClimberDto } from './dto/update-climber.dto';
-import { ClimberEntity } from './entities/climbers.entities';
+import { ClimberEntity } from './entities/climber.entity';
 import { getNow } from './climbers.utils';
 @Injectable()
 export class ClimbersService {
@@ -36,6 +36,7 @@ export class ClimbersService {
     id: number,
     updateClimberDto: UpdateClimberDto,
   ): Promise<ClimberEntity> {
+    console.log('HERE!', id);
     const user = await this.climbersRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('Climber not found');

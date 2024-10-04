@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ClimberEntity } from './entities/climbers.entities';
+import { ClimberEntity } from './entities/climber.entity';
 import { ClimbersService } from './climbers.service';
 import { ClimbersController } from './climbers.controller';
 
