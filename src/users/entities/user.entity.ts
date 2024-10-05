@@ -9,19 +9,27 @@ export class UserEntity {
   @Column()
   grant: IGrant;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   password: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   allClimbId: number;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   vk_id: number;
 
   @Column()
   name: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   avatar_url: string;
 
   @Column({

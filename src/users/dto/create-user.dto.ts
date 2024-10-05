@@ -1,5 +1,5 @@
 export class CreateUserDto {
-  allClimbId: number;
+  allClimbId: number | null;
   grant: number;
   password: string | null;
   vk_id: number | null;
