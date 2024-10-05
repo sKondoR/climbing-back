@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
+import { firstValueFrom } from 'rxjs';
 
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -57,18 +58,18 @@ export class AuthService {
         ? process.env.APP_HOST
         : process.env.APP_LOCAL;
 
-    return this.http
-      .get(
+    return firstValueFrom(
+      this.http.get(
         `https://oauth.vk.com/access_token?client_id=${VKDATA.client_id}&client_secret=${VKDATA.client_secret}&redirect_uri=${host}/signin&code=${code}`,
-      )
-      .toPromise();
+      ),
+    );
   }
 
   async getUserDataFromVk(userId: string, token: string): Promise<any> {
-    return this.http
-      .get(
+    return firstValueFrom(
+      this.http.get(
         `https://api.vk.com/method/users.get?user_ids=${userId}&fields=photo_400,has_mobile,home_town,contacts,mobile_phone&access_token=${token}&v=5.120`,
-      )
-      .toPromise();
+      ),
+    );
   }
 }
