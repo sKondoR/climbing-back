@@ -1,7 +1,7 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsInt, IsString } from 'class-validator';
 
 export class AuthEntity {
-  @IsEmail()
+  @IsInt()
   allClimbId: number;
 
   @IsString()
