@@ -70,9 +70,9 @@ export class AuthService {
     //   state: auth.state,
     // });
 
-    const body = new URLSearchParams({
-      code: auth.code,
-    });
+    // const body = new URLSearchParams({
+    //   code: auth.code,
+    // });
 
     // const url = `https://id.vk.com/oauth2/auth?${queryParams}`;
 
