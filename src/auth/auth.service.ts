@@ -77,11 +77,17 @@ export class AuthService {
     // const url = `https://id.vk.com/oauth2/auth?${queryParams}`;
 
     return this.http
-      .post(url, body.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+      .post(
+        url,
+        {
+          code: auth.code,
         },
-      })
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      )
       .toPromise();
   }
 
