@@ -10,4 +10,7 @@ export class AuthEntity {
 
 export class AuthVKEntity {
   code: string;
+  device_id: string;
+  state: string;
+  code_verifier: string;
 }

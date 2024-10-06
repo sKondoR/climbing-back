@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
-import { AuthEntity } from './entities/auth.entities';
+import { AuthEntity, AuthVKEntity } from './entities/auth.entities';
 import { JwtPayloadInterface } from './auth.interfaces';
 
 @Injectable()
@@ -48,41 +48,27 @@ export class AuthService {
     };
   }
 
-  async getVkUser(code: string): Promise<any> {
-    // const VKDATA = {
-    //   client_id: process.env.CLIENT_ID,
-    //   client_secret: process.env.CLIENT_SECRET,
-    // };
+  async getVkToken(auth: AuthVKEntity): Promise<any> {
+    const redirect_url = `${
+      process.env.NODE_ENV === 'prod'
+        ? process.env.APP_HOST
+        : process.env.APP_LOCAL
+    }/signin`;
 
-    // const host =
-    //   process.env.NODE_ENV === 'prod'
-    //     ? process.env.APP_HOST
-    //     : process.env.APP_LOCAL;
+    const queryParamsString =
+      `grant_type=authorization_code&redirect_uri=${redirect_url}` +
+      `&code_verifier=${auth.code_verifier}` +
+      `&client_id=${process.env.CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
-    const params = new URLSearchParams('https://id.vk.com/oauth2/public_info');
-    params.append('client_id', process.env.CLIENT_ID);
-    params.append('id_token', code);
-
+    const body = new URLSearchParams({
+      code: auth.code,
+    });
     return firstValueFrom(
-      this.http.get(
-        `https://id.vk.com/oauth2/public_info`,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+      this.http.post(queryParamsString, body, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        // `https://oauth.vk.com/access_token?client_id=52404639&client_secret=8d023nLvevMyDESBQOOu&redirect_uri=https://climbing-web.vercel.app/signin&code=c9b9570308376863ac`
-        //`https://oauth.vk.com/access_token?client_id=${VKDATA.client_id}&client_secret=${VKDATA.client_secret}&redirect_uri=${host}/signin&code=${code}`,
-        // {
-        //   headers: {
-        //     'Access-Control-Allow-Origin': 'http://localhost:3000',
-        //     'Access-Control-Allow-Methods':
-        //       'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-        //     'Access-Control-Allow-Headers': 'X-Requested-With,content-type',
-        //     'Access-Control-Allow-Credentials': true,
-        //   },
-        // },
-      ),
+      }),
     );
   }
 

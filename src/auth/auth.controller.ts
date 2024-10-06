@@ -27,8 +27,8 @@ export class AuthController {
     let authData;
 
     try {
-      // authData = await this.authService.getVkToken(auth.code);
-      authData = await this.authService.getVkUser(auth.code);
+      authData = await this.authService.getVkToken(auth);
+      // authData = await this.authService.getVkUser(auth.code);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       throw new UnprocessableEntityException('Wrong VK code >>> ' + err);
