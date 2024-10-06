@@ -24,7 +24,7 @@ export class AuthController {
   async vk(@Body(new ValidationPipe()) auth: AuthVKEntity) {
     let authData;
 
-    return process.env;
+    return `${process.env.APP_HOST}signin`;
 
     try {
       authData = await this.authService.getVkToken(auth);
