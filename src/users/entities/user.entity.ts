@@ -21,6 +21,7 @@ export class UserEntity {
 
   @Column({
     nullable: true,
+    unique: true,
   })
   vk_id: number;
 

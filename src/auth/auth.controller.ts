@@ -38,11 +38,12 @@ export class AuthController {
       throw new HttpException(`No VK id_token: `, authData);
     }
 
-    // const _user = await this.userService.findByVkId(authData.data.user_id);
+    const _user = await this.userService.findByVkId(authData.data.user_id);
 
-    // if (_user) {
-    //   return this.authService.authenticate(_user, true);
-    // }
+    if (_user) {
+      return _user;
+      // return this.authService.authenticate(_user, true);
+    }
 
     try {
       const { data } = await this.authService.getUserDataFromVk(
@@ -61,6 +62,16 @@ export class AuthController {
         grant: IGrant.USER,
       };
 
+      // "id": 26807,
+      // "has_mobile": 1,
+      // "photo_400": "https://sun6-22.userapi.com/s/v1/ig2/dJRIlk67zM0sfXG4MJK8gRqO62HCeoaYfimmH0sNqyFKf5z3gEbR9fgwce0a0RnmFU7VMufOE3oJACblWXOxiYbT.jpg?quality=96&crop=63,21,677,677&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640&ava=1&cs=400x400",
+      // "mobile_phone": "89052506681",
+      // "home_phone": "",
+      // "home_town": "",
+      // "first_name": "Сергей",
+      // "last_name": "Кондрашин",
+      // "can_access_closed": true,
+      // "is_closed": false
       throw new HttpException(`VK user data: `, data);
 
       await this.userService.create(user);
