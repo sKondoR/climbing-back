@@ -30,13 +30,15 @@ export class AuthController {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       throw new UnprocessableEntityException(
-        'error in getting VK token ' + err + `${process.env.APP_HOST}signin`,
+        '1error in getting VK token ' + err + `${process.env.APP_HOST}signin`,
       );
     }
 
     if (authData.data.error_description) {
       throw new UnprocessableEntityException(
-        'error in getting VK token ' + authData.data.error_description + '...',
+        '2error in getting VK token ' +
+          authData.data.error_description +
+          `${process.env.APP_HOST}signin`,
       );
     }
 
