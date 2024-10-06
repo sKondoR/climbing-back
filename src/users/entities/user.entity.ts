@@ -6,6 +6,12 @@ export class UserEntity {
   @PrimaryGeneratedColumn() // Auto-incremented primary key
   id: number;
 
+  @Column({
+    nullable: true,
+    unique: true,
+  })
+  vk_id: number;
+
   @Column()
   grant: IGrant;
 
@@ -18,12 +24,6 @@ export class UserEntity {
     nullable: true,
   })
   allClimbId: number;
-
-  @Column({
-    nullable: true,
-    unique: true,
-  })
-  vk_id: number;
 
   @Column()
   name: string;

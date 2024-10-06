@@ -7,10 +7,3 @@ export class AuthEntity {
   @IsString()
   password: string;
 }
-
-export class AuthVKEntity {
-  code: string;
-  device_id: string;
-  state: string;
-  code_verifier: string;
-}

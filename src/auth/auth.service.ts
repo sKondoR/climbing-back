@@ -1,23 +1,22 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-// import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { firstValueFrom } from 'rxjs';
 
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
-import { AuthEntity, AuthVKEntity } from './entities/auth.entities';
-import { JwtPayloadInterface } from './auth.interfaces';
+import { AuthEntity } from './entities/auth.entities';
+import { JwtPayloadInterface, AuthVKEntity } from './auth.interfaces';
 
 interface TokenResponse {
   id_token: string;
 }
 @Injectable()
 export class AuthService {
-  // usersService: any;
   constructor(
     private usersService: UsersService,
-    // private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService,
     private http: HttpService,
   ) {}
 
@@ -45,9 +44,8 @@ export class AuthService {
     }
 
     return {
-      ...user,
-      token: 'test',
-      // token: await this.jwtService.sign({ id: user.id }),
+      ...auth,
+      password: await this.jwtService.sign({ id: user.id }),
     };
   }
 

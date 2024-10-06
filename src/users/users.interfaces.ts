@@ -4,12 +4,12 @@ export enum IGrant {
 }
 export interface IUser {
   id: number;
+  vk_id: number | null;
   allClimbId: number | null;
+  name: string | null;
+  avatar_url: string | null;
   grant: IGrant;
   password: string | null;
-  vk_id: number | null;
-  avatar_url: string | null;
-  name: string | null;
   team: IAllClimber[] | null;
   friends: IAllClimber[] | null;
   pro: IAllClimber[] | null;

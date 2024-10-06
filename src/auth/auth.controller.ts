@@ -9,7 +9,8 @@ import {
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
-import { AuthEntity, AuthVKEntity } from './entities/auth.entities';
+import { AuthEntity } from './entities/auth.entities';
+import { AuthVKEntity } from './auth.interfaces';
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { IGrant } from '../users/users.interfaces';
@@ -41,8 +42,7 @@ export class AuthController {
     const _user = await this.userService.findByVkId(authData.data.user_id);
 
     if (_user) {
-      return _user;
-      // return this.authService.authenticate(_user, true);
+      return this.authService.authenticate(_user);
     }
 
     try {
@@ -53,13 +53,16 @@ export class AuthController {
 
       const profile = data.response[0];
 
-      const user = {
+      const newUser = {
         vk_id: authData.user_id,
         allClimbId: authData.allClimbId,
-        password: null,
         name: `${profile.first_name} ${profile.last_name}`,
         avatar_url: profile.photo_400,
+        password: null,
         grant: IGrant.USER,
+        team: [],
+        friends: [],
+        pro: [],
       };
 
       // "id": 26807,
@@ -72,11 +75,9 @@ export class AuthController {
       // "last_name": "Кондрашин",
       // "can_access_closed": true,
       // "is_closed": false
-      throw new HttpException(`VK user data: `, data);
 
-      await this.userService.create(user);
-
-      return this.authService.authenticate(user, true);
+      await this.userService.create(newUser);
+      return this.authService.authenticate(newUser);
     } catch (err) {
       throw new UnprocessableEntityException(err);
     }
