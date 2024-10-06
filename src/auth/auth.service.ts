@@ -56,7 +56,7 @@ export class AuthService {
     }/signin`;
 
     const queryParamsString =
-      `grant_type=authorization_code&redirect_uri=${redirect_url}` +
+      `https://id.vk.com/oauth2/auth?grant_type=authorization_code&redirect_uri=${redirect_url}` +
       `&code_verifier=${auth.code_verifier}` +
       `&client_id=${process.env.CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
