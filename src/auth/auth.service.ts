@@ -53,7 +53,7 @@ export class AuthService {
       process.env.NODE_ENV === 'prod'
         ? process.env.APP_HOST
         : process.env.APP_LOCAL
-    }/signin`;
+    }signin`;
 
     const queryParamsString =
       `https://id.vk.com/oauth2/auth?grant_type=authorization_code&redirect_uri=${redirect_url}` +
