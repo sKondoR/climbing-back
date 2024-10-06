@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   ValidationPipe,
+  BadRequestException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 
@@ -35,9 +36,8 @@ export class AuthController {
     }
 
     if (authData) {
-      throw new UnprocessableEntityException(
+      throw new BadRequestException(
         '2error in getting VK token:' +
-          authData +
           '   /device_id: ' +
           auth.device_id +
           '   /code_verifier: ' +
@@ -48,6 +48,7 @@ export class AuthController {
           auth.state +
           '   /client_id ' +
           process.env.VK_APP_CLIENT_ID,
+        authData,
       );
     }
 
