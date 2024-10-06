@@ -3,7 +3,7 @@ import {
   Post,
   Body,
   ValidationPipe,
-  BadRequestException,
+  // BadRequestException,
   UnprocessableEntityException,
   HttpException,
 } from '@nestjs/common';
@@ -31,55 +31,32 @@ export class AuthController {
       // authData = await this.authService.getVkUser(auth.code);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      throw new UnprocessableEntityException(
-        '1error in getting VK token ' + err + `${process.env.APP_HOST}signin`,
-      );
+      throw new UnprocessableEntityException('VK tokens error: ' + err);
     }
 
-    if (authData) {
-      throw new HttpException(
-        `HTTP error! status: ${authData.status}`,
-        authData,
-      );
-      throw new BadRequestException(
-        '2error in getting VK token:' +
-          authData +
-          '   /device_id: ' +
-          auth.device_id +
-          '   /code_verifier: ' +
-          auth.code_verifier +
-          '   /code: ' +
-          auth.code +
-          '   /state: ' +
-          auth.state +
-          '   /client_id ' +
-          process.env.VK_APP_CLIENT_ID,
-      );
+    const hasIdToken = authData.hasOwnProperty('id_token');
+
+    if (!hasIdToken) {
+      throw new HttpException(`No VK id_token: `, authData);
     }
 
-    return;
+    // const _user = await this.userService.findByVkId(authData.data.user_id);
 
-    const hasAllClimbId = authData.data.hasOwnProperty('allClimbId');
-
-    const _user = hasAllClimbId
-      ? await this.userService.findByAllClimbId(authData.data.allClimbId)
-      : await this.userService.findByVkId(authData.data.user_id);
-
-    if (_user) {
-      return this.authService.authenticate(_user, true);
-    }
+    // if (_user) {
+    //   return this.authService.authenticate(_user, true);
+    // }
 
     try {
       const { data } = await this.authService.getUserDataFromVk(
-        authData.data.user_id,
-        authData.data.access_token,
+        authData.user_id,
+        authData.access_token,
       );
 
       const profile = data.response[0];
 
       const user = {
-        vk_id: authData.data.user_id,
-        allClimbId: authData.data.allClimbId,
+        vk_id: authData.user_id,
+        allClimbId: authData.allClimbId,
         password: null,
         name: `${profile.first_name} ${profile.last_name}`,
         avatar_url: profile.photo_400,
