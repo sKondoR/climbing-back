@@ -43,6 +43,8 @@ export class AuthController {
       );
     }
 
+    return;
+
     const hasAllClimbId = authData.data.hasOwnProperty('allClimbId');
 
     const _user = hasAllClimbId
