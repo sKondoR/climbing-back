@@ -60,9 +60,9 @@ export class AuthService {
 
     // const bodyFormData = new FormData();
     // bodyFormData.append('code', auth.code);
-    const bodyFormData = new URLSearchParams({
+    const bodyFormData = {
       code: auth.code,
-    });
+    };
 
     return this.http
       .post(queryParamsString, bodyFormData, {
