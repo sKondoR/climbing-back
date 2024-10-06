@@ -8,11 +8,10 @@ import { UsersService } from '../users/users.service';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { AuthEntity, AuthVKEntity } from './entities/auth.entities';
 import { JwtPayloadInterface } from './auth.interfaces';
-import { response } from 'express';
 
-// interface TokenResponse {
-//   id_token: string;
-// }
+interface TokenResponse {
+  id_token: string;
+}
 @Injectable()
 export class AuthService {
   // usersService: any;
@@ -52,7 +51,7 @@ export class AuthService {
     };
   }
 
-  async getVkToken(auth: AuthVKEntity): Promise<object> {
+  async getVkToken(auth: AuthVKEntity): Promise<TokenResponse | undefined> {
     const redirect_url = `${process.env.APP_HOST}signin`;
 
     const queryParamsString =
@@ -64,7 +63,7 @@ export class AuthService {
       `&device_id=${auth.device_id}` +
       `&state=${auth.state}`;
 
-    // let tokens: TokenResponse | undefined;
+    let tokens: TokenResponse | undefined;
 
     try {
       const response = await this.http
@@ -79,12 +78,12 @@ export class AuthService {
         throw new BadRequestException(`HTTP error! status: ${response.status}`);
       }
 
-      // tokens = response.data as TokenResponse;
+      tokens = response.data as TokenResponse;
     } catch (error) {
       throw error;
     }
 
-    return response;
+    return tokens;
 
     // const client_id = process.env.VK_APP_CLIENT_ID;
     // const queryParams = new URLSearchParams({

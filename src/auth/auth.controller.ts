@@ -5,6 +5,7 @@ import {
   ValidationPipe,
   BadRequestException,
   UnprocessableEntityException,
+  HttpException,
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
@@ -36,6 +37,10 @@ export class AuthController {
     }
 
     if (authData) {
+      throw new HttpException(
+        `HTTP error! status: ${authData.status}`,
+        authData,
+      );
       throw new BadRequestException(
         '2error in getting VK token:' +
           authData +
