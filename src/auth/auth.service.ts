@@ -55,13 +55,14 @@ export class AuthService {
       `https://id.vk.com/oauth2/auth?grant_type=authorization_code` +
       `&redirect_uri=${redirect_url}` +
       `&code_verifier=${auth.code_verifier}` +
+      `&code=${auth.code}` +
       `&client_id=${process.env.VK_APP_CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
-    // const bodyFormData = new FormData();
-    // bodyFormData.append('code', auth.code);
+    const bodyFormData = new FormData();
+    bodyFormData.append('code', auth.code);
 
     return this.http
-      .post(queryParamsString, `code=${auth.code}`, {
+      .post(queryParamsString, bodyFormData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
