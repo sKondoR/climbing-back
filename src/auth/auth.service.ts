@@ -57,11 +57,11 @@ export class AuthService {
       `&code_verifier=${auth.code_verifier}` +
       `&client_id=${process.env.VK_APP_CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
-    const bodyFormData = new FormData();
-    bodyFormData.append('code', auth.code);
+    // const bodyFormData = new FormData();
+    // bodyFormData.append('code', auth.code);
 
     return this.http
-      .post(queryParamsString, bodyFormData, {
+      .post(queryParamsString, `code=${auth.code}`, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
