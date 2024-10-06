@@ -63,13 +63,11 @@ export class AuthService {
     const body = new URLSearchParams({
       code: auth.code,
     });
-    return firstValueFrom(
-      this.http.post(queryParamsString, body, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }),
-    );
+    return this.http.post(queryParamsString, body, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).toPromise;
   }
 
   async getUserDataFromVk(userId: string, token: string): Promise<any> {
