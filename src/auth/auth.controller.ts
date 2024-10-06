@@ -31,10 +31,16 @@ export class AuthController {
       // authData = await this.authService.getVkUser(auth.code);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      throw new UnprocessableEntityException('Wrong VK code >>> ' + err);
+      throw new UnprocessableEntityException(
+        'error in getting VK token ' + err,
+      );
     }
 
-    return authData.data;
+    if (authData.data.error_description) {
+      throw new UnprocessableEntityException(
+        'error in getting VK token ' + authData.data.error_description,
+      );
+    }
 
     const hasAllClimbId = authData.data.hasOwnProperty('allClimbId');
 

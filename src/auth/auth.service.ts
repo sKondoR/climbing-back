@@ -58,7 +58,7 @@ export class AuthService {
     const queryParamsString =
       `https://id.vk.com/oauth2/auth?grant_type=authorization_code&redirect_uri=${redirect_url}` +
       `&code_verifier=${auth.code_verifier}` +
-      `&client_id=${process.env.CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
+      `&client_id=${process.env.VK_APP_CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
     const bodyFormData = new FormData();
     bodyFormData.append('code', auth.code);
