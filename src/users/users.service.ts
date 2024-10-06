@@ -2,7 +2,6 @@ import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 // import { ConfigService, InjectConfig } from '@nestjs/config';
-import { TEAM, FRIENDS } from './users.constants';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -36,20 +35,8 @@ export class UsersService {
     return await this.usersRepository.find();
   }
 
-  // hardcoded first user
   async findById(id: number): Promise<IUser> {
-    return {
-      id,
-      allClimbId: 35292,
-      grant: 0,
-      password: null,
-      vk_id: null,
-      avatar_url: null,
-      name: 'Виктор Кондрашин',
-      team: TEAM,
-      friends: FRIENDS,
-      pro: [],
-    };
+    return await this.usersRepository.findOne({ where: { id } });
   }
 
   async findByAllClimbId(allClimbId: number): Promise<UserEntity | null> {
