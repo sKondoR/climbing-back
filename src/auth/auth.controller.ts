@@ -28,8 +28,6 @@ export class AuthController {
 
     try {
       authData = await this.authService.getVkToken(auth);
-      // authData = await this.authService.getVkUser(auth.code);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       throw new UnprocessableEntityException('VK tokens error: ' + err);
     }
@@ -62,6 +60,8 @@ export class AuthController {
         avatar_url: profile.photo_400,
         grant: IGrant.USER,
       };
+
+      throw new HttpException(`VK user data: `, data);
 
       await this.userService.create(user);
 
