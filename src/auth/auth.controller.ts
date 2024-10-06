@@ -21,10 +21,10 @@ export class AuthController {
   ) {}
 
   @Post('/login/vk')
-  async vk(
-    @Body(new ValidationPipe()) auth: AuthVKEntity,
-  ): Promise<UpdateUserDto> {
+  async vk(@Body(new ValidationPipe()) auth: AuthVKEntity) {
     let authData;
+
+    return process.env;
 
     try {
       authData = await this.authService.getVkToken(auth);
