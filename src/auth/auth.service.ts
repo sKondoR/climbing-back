@@ -9,6 +9,9 @@ import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { AuthEntity, AuthVKEntity } from './entities/auth.entities';
 import { JwtPayloadInterface } from './auth.interfaces';
 
+interface TokenResponse {
+  id_token: string;
+}
 @Injectable()
 export class AuthService {
   // usersService: any;
@@ -48,10 +51,10 @@ export class AuthService {
     };
   }
 
-  async getVkToken(auth: AuthVKEntity): Promise<any> {
+  async getVkToken(auth: AuthVKEntity): Promise<TokenResponse | undefined> {
     const redirect_url = `${process.env.APP_HOST}signin`;
 
-    const url =
+    const queryParamsString =
       `https://id.vk.com/oauth2/auth?grant_type=authorization_code` +
       `&redirect_uri=${redirect_url}` +
       `&code_verifier=${auth.code_verifier}` +
@@ -59,6 +62,30 @@ export class AuthService {
       `&client_id=${process.env.VK_APP_CLIENT_ID}` +
       `&device_id=${auth.device_id}` +
       `&state=${auth.state}`;
+
+    let tokens: TokenResponse | undefined;
+
+    try {
+      const response = await this.http
+        .post(
+          `https://id.vk.com/oauth2/auth?${queryParamsString}`,
+          new URLSearchParams({ code: auth.code }).toString(),
+          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+        )
+        .toPromise();
+
+      if (response.status !== 200) {
+        throw new BadRequestException(`HTTP error! status: ${response.status}`);
+      }
+
+      tokens = response.data as TokenResponse;
+    } catch (error) {
+      console.error('err>>> ', error);
+      // Optionally, throw the error or handle it depending on your application's requirement.
+      throw error;
+    }
+
+    return tokens;
 
     // const client_id = process.env.VK_APP_CLIENT_ID;
     // const queryParams = new URLSearchParams({
@@ -76,19 +103,19 @@ export class AuthService {
 
     // const url = `https://id.vk.com/oauth2/auth?${queryParams}`;
 
-    return this.http
-      .post(
-        url,
-        {
-          code: auth.code,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      )
-      .toPromise();
+    // return this.http
+    //   .post(
+    //     url,
+    //     {
+    //       code: auth.code,
+    //     },
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/x-www-form-urlencoded',
+    //       },
+    //     },
+    //   )
+    //   .toPromise();
   }
 
   async getUserDataFromVk(userId: string, token: string): Promise<any> {
