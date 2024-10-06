@@ -27,6 +27,7 @@ export class UsersService {
       ? await this.getHash(createUserDto.password)
       : null;
     climber.name = createUserDto.name;
+    climber.grant = createUserDto.grant;
     climber.allClimbId = createUserDto.allClimbId;
     return await this.usersRepository.save(climber);
   }
