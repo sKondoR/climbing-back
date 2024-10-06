@@ -34,11 +34,7 @@ export class AuthController {
       throw new UnprocessableEntityException('Wrong VK code >>> ' + err);
     }
 
-    if (authData) {
-      throw new UnprocessableEntityException(
-        'AuthData >>> ' + authData.access_token,
-      );
-    }
+    throw new UnprocessableEntityException('AuthData >>> ' + authData);
 
     const hasAllClimbId = authData.data.hasOwnProperty('allClimbId');
 
