@@ -39,7 +39,7 @@ export class AuthController {
       throw new HttpException(`No VK id_token: `, authData);
     }
 
-    const _user = await this.userService.findByVkId(authData.data.user_id);
+    const _user = await this.userService.findByVkId(authData.user_id);
 
     if (_user) {
       return this.authService.authenticate(_user);
