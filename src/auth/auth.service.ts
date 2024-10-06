@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { JwtService } from '@nestjs/jwt';
+// import { JwtService } from '@nestjs/jwt';
 import { firstValueFrom } from 'rxjs';
 
 import { UserEntity } from '../users/entities/user.entity';
@@ -14,7 +14,7 @@ export class AuthService {
   // usersService: any;
   constructor(
     private usersService: UsersService,
-    private readonly jwtService: JwtService,
+    // private readonly jwtService: JwtService,
     private http: HttpService,
   ) {}
 
@@ -43,24 +43,45 @@ export class AuthService {
 
     return {
       ...user,
-      token: await this.jwtService.sign({ id: user.id }),
+      token: 'test',
+      // token: await this.jwtService.sign({ id: user.id }),
     };
   }
 
-  async getVkToken(code: string): Promise<any> {
-    const VKDATA = {
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-    };
+  async getVkUser(code: string): Promise<any> {
+    // const VKDATA = {
+    //   client_id: process.env.CLIENT_ID,
+    //   client_secret: process.env.CLIENT_SECRET,
+    // };
 
-    const host =
-      process.env.NODE_ENV === 'prod'
-        ? process.env.APP_HOST
-        : process.env.APP_LOCAL;
+    // const host =
+    //   process.env.NODE_ENV === 'prod'
+    //     ? process.env.APP_HOST
+    //     : process.env.APP_LOCAL;
+
+    const params = new URLSearchParams('https://id.vk.com/oauth2/public_info');
+    params.append('client_id', process.env.CLIENT_ID);
+    params.append('id_token', code);
 
     return firstValueFrom(
       this.http.get(
-        `https://oauth.vk.com/access_token?client_id=${VKDATA.client_id}&client_secret=${VKDATA.client_secret}&redirect_uri=${host}/signin&code=${code}`,
+        `https://id.vk.com/oauth2/public_info`,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+        // `https://oauth.vk.com/access_token?client_id=52404639&client_secret=8d023nLvevMyDESBQOOu&redirect_uri=https://climbing-web.vercel.app/signin&code=c9b9570308376863ac`
+        //`https://oauth.vk.com/access_token?client_id=${VKDATA.client_id}&client_secret=${VKDATA.client_secret}&redirect_uri=${host}/signin&code=${code}`,
+        // {
+        //   headers: {
+        //     'Access-Control-Allow-Origin': 'http://localhost:3000',
+        //     'Access-Control-Allow-Methods':
+        //       'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+        //     'Access-Control-Allow-Headers': 'X-Requested-With,content-type',
+        //     'Access-Control-Allow-Credentials': true,
+        //   },
+        // },
       ),
     );
   }

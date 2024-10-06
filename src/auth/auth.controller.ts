@@ -28,13 +28,15 @@ export class AuthController {
 
     try {
       // authData = await this.authService.getVkToken(auth.code);
-      console.log(auth);
+      authData = await this.authService.getVkUser(auth.code);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      throw new UnprocessableEntityException('Wrong VK code');
+      throw new UnprocessableEntityException('Wrong VK code >>> ' + err);
     }
 
-    throw new UnprocessableEntityException('JERE auth: ' + auth);
+    throw new UnprocessableEntityException(
+      'JERE auth: ' + JSON.stringify(authData),
+    );
     const hasAllClimbId = authData.data.hasOwnProperty('allClimbId');
 
     const _user = hasAllClimbId

@@ -15,13 +15,14 @@ import { JwtStrategy } from './jwt.strategy';
     UsersModule,
     HttpModule,
     ConfigModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.registerAsync({
-      useFactory: (config: ConfigService) => config.get('jwt'),
-      inject: [ConfigService],
-    }),
+    // PassportModule.register({ defaultStrategy: 'jwt' }),
+    // JwtModule.registerAsync({
+    //   useFactory: (config: ConfigService) => config.get('jwt'),
+    //   inject: [ConfigService],
+    // }),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService],
+  // providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
