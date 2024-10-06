@@ -58,8 +58,11 @@ export class AuthService {
       `&code=${auth.code}` +
       `&client_id=${process.env.VK_APP_CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
-    const bodyFormData = new FormData();
-    bodyFormData.append('code', auth.code);
+    // const bodyFormData = new FormData();
+    // bodyFormData.append('code', auth.code);
+    const bodyFormData = new URLSearchParams({
+      code: auth.code,
+    });
 
     return this.http
       .post(queryParamsString, bodyFormData, {
