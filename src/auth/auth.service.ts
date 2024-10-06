@@ -60,11 +60,11 @@ export class AuthService {
       `&code_verifier=${auth.code_verifier}` +
       `&client_id=${process.env.CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
-    const body = new URLSearchParams({
-      code: auth.code,
-    }).toString();
+    const bodyFormData = new FormData();
+    bodyFormData.append('code', auth.code);
+
     return this.http
-      .post(queryParamsString, body, {
+      .post(queryParamsString, bodyFormData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
