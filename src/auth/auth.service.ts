@@ -80,8 +80,6 @@ export class AuthService {
 
       tokens = response.data as TokenResponse;
     } catch (error) {
-      console.error('err>>> ', error);
-      // Optionally, throw the error or handle it depending on your application's requirement.
       throw error;
     }
 

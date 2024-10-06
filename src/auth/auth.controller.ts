@@ -37,7 +37,7 @@ export class AuthController {
     if (authData) {
       throw new UnprocessableEntityException(
         '2error in getting VK token:' +
-          authData.id_token +
+          authData +
           '   /device_id: ' +
           auth.device_id +
           '   /code_verifier: ' +
