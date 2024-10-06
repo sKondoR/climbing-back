@@ -35,14 +35,14 @@ export class AuthController {
     }
 
     return {
-      vk_id: authData.data.user_id,
-      allClimbId: authData.data.allClimbId,
+      vk_id: authData.user_id,
+      allClimbId: authData.allClimbId,
       password: null,
       id: 1001,
       friends: [],
       team: [],
       pro: [],
-      token: JSON.stringify(authData),
+      token: 'testtest',
     };
 
     const hasAllClimbId = authData.data.hasOwnProperty('allClimbId');
