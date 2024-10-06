@@ -51,24 +51,34 @@ export class AuthService {
   async getVkToken(auth: AuthVKEntity): Promise<any> {
     const redirect_url = `${process.env.APP_HOST}signin`;
 
-    const queryParamsString =
-      `https://id.vk.com/oauth2/auth?grant_type=authorization_code` +
-      `&redirect_uri=${redirect_url}` +
-      `&code_verifier=${auth.code_verifier}` +
-      `&code=${auth.code}` +
-      `&client_id=${process.env.VK_APP_CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
+    // const queryParamsString =
+    //   `https://id.vk.com/oauth2/auth?grant_type=authorization_code` +
+    //   `&redirect_uri=${redirect_url}` +
+    //   `&code_verifier=${auth.code_verifier}` +
+    //   `&code=${auth.code}` +
+    //   `&client_id=${process.env.VK_APP_CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
-    const bodyFormData = new FormData();
-    bodyFormData.append('code', auth.code);
-    // const bodyFormData = {
-    //   code: auth.code,
-    // };
+    const client_id = process.env.VITE_VK_APP_CLIENT_ID;
+    const queryParams = new URLSearchParams({
+      grant_type: 'authorization_code',
+      redirect_uri: redirect_url,
+      code_verifier: auth.code_verifier,
+      client_id: client_id,
+      device_id: auth.device_id,
+      state: auth.state,
+    });
+
+    const body = new URLSearchParams({
+      code: auth.code,
+    });
+
+    const url = `https://id.vk.com/oauth2/auth?${queryParams}`;
 
     return this.http
-      .post(queryParamsString, bodyFormData, {
-        // headers: {
-        //   'Content-Type': 'application/x-www-form-urlencoded',
-        // },
+      .post(url, body.toString(), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
       })
       .toPromise();
   }
