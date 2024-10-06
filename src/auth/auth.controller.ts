@@ -38,7 +38,8 @@ export class AuthController {
       throw new UnprocessableEntityException(
         '2error in getting VK token ' +
           authData.data.error_description +
-          `${process.env.APP_HOST}signin`,
+          '   code: ' +
+          auth.code,
       );
     }
 
