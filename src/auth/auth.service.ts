@@ -58,7 +58,7 @@ export class AuthService {
     //   `&code=${auth.code}` +
     //   `&client_id=${process.env.VK_APP_CLIENT_ID}&device_id=${auth.device_id}&state=${auth.state}`;
 
-    const client_id = process.env.VITE_VK_APP_CLIENT_ID;
+    const client_id = process.env.VK_APP_CLIENT_ID;
     const queryParams = new URLSearchParams({
       grant_type: 'authorization_code',
       redirect_uri: redirect_url,
