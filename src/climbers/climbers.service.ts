@@ -36,7 +36,6 @@ export class ClimbersService {
     id: number,
     updateClimberDto: UpdateClimberDto,
   ): Promise<ClimberEntity> {
-    console.log('HERE!', id);
     const user = await this.climbersRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('Climber not found');
