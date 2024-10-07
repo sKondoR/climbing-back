@@ -1,22 +1,25 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from 'nestjs-config';
+import * as path from 'path';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ClimbersModule } from './climbers/climbers.module';
 import { ScrapingModule } from './scraping/scraping.module';
-import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.load(path.resolve(__dirname, 'config', '*.{ts,js}')),
     AuthModule,
     UsersModule,
     ClimbersModule,
     ScrapingModule,
-    DatabaseModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => config.get('database'),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [],
   providers: [],

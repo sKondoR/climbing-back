@@ -20,8 +20,8 @@ import { TEAM, FRIENDS } from '../users/users.constants';
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
     private readonly userService: UsersService,
+    private readonly authService: AuthService,
   ) {}
 
   @Post('/login/vk')
