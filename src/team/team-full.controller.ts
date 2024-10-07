@@ -4,7 +4,7 @@ import { CreateTeamMemberDto } from './dto/create-team-member.dto';
 import { TeamService } from './team.service';
 
 @Controller('team-all')
-export class TeamAllController {
+export class TeamFullController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post()
