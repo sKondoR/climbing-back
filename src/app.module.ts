@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ClimbersModule } from './climbers/climbers.module';
 import { ScrapingModule } from './scraping/scraping.module';
 import { DatabaseModule } from './database/database.module';
+import { TeamModule } from './team/team.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DatabaseModule } from './database/database.module';
     ClimbersModule,
     ScrapingModule,
     DatabaseModule,
+    TeamModule,
   ],
   controllers: [],
   providers: [JwtService],

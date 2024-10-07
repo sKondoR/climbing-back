@@ -13,15 +13,17 @@ export class TeamService {
     private teamMembersRepository: Repository<TeamMemberEntity>,
   ) {}
 
-  async create(createTeamDto: CreateTeamMemberDto): Promise<TeamMemberEntity> {
+  async create(
+    createTeamMemberDto: CreateTeamMemberDto,
+  ): Promise<TeamMemberEntity> {
     const teamMember = new TeamMemberEntity();
-    teamMember.id = createTeamDto.id;
-    teamMember.isCoach = createTeamDto.isCoach;
-    teamMember.name = createTeamDto.name;
-    teamMember.allClimbId = createTeamDto.allClimbId;
-    teamMember.year = createTeamDto.year;
-    teamMember.text = createTeamDto.text;
-    teamMember.isCityTeam = createTeamDto.isCityTeam;
+    teamMember.id = createTeamMemberDto.id;
+    teamMember.isCoach = createTeamMemberDto.isCoach;
+    teamMember.name = createTeamMemberDto.name;
+    teamMember.allClimbId = createTeamMemberDto.allClimbId;
+    teamMember.year = createTeamMemberDto.year;
+    teamMember.text = createTeamMemberDto.text;
+    teamMember.isCityTeam = createTeamMemberDto.isCityTeam;
     return await this.teamMembersRepository.save(teamMember);
   }
 
@@ -55,6 +57,10 @@ export class TeamService {
     teamMember.isCityTeam = updateTeamDto.isCityTeam;
     await this.teamMembersRepository.update({ id }, teamMember);
     return teamMember;
+  }
+
+  async removeAll(): Promise<void> {
+    await this.teamMembersRepository.delete({});
   }
 
   async remove(id: number): Promise<void> {

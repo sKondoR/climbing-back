@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Delete } from '@nestjs/common';
 
 import { CreateTeamMemberDto } from './dto/create-team-member.dto';
 import { TeamService } from './team.service';
@@ -19,5 +19,11 @@ export class TeamFullController {
       }
       return this.teamService.create(teamMember);
     });
+  }
+
+  @Delete()
+  async removeAll() {
+    await this.teamService.removeAll();
+    return { message: 'All team members removed.' };
   }
 }
