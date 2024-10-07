@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from 'nestjs-config';
-import * as path from 'path';
+import { ConfigModule } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -10,7 +10,7 @@ import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
-    ConfigModule.load(path.resolve(__dirname, 'config', '*.{ts,js}')),
+    ConfigModule.forRoot(),
     AuthModule,
     UsersModule,
     ClimbersModule,
@@ -18,6 +18,6 @@ import { DatabaseModule } from './database/database.module';
     DatabaseModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [JwtService],
 })
 export class AppModule {}
