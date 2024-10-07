@@ -17,7 +17,6 @@ export class TeamService {
     createTeamMemberDto: CreateTeamMemberDto,
   ): Promise<TeamMemberEntity> {
     const teamMember = new TeamMemberEntity();
-    teamMember.id = createTeamMemberDto.id;
     teamMember.isCoach = createTeamMemberDto.isCoach;
     teamMember.name = createTeamMemberDto.name;
     teamMember.allClimbId = createTeamMemberDto.allClimbId;
