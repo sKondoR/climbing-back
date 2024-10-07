@@ -25,6 +25,11 @@ export class TeamMemberEntity {
   @Column({
     nullable: true,
   })
+  isCoach: boolean;
+
+  @Column({
+    nullable: true,
+  })
   isCityTeam: boolean;
 
   @Column({

@@ -16,6 +16,7 @@ export class TeamService {
   async create(createTeamDto: CreateTeamMemberDto): Promise<TeamMemberEntity> {
     const teamMember = new TeamMemberEntity();
     teamMember.id = createTeamDto.id;
+    teamMember.isCoach = createTeamDto.isCoach;
     teamMember.name = createTeamDto.name;
     teamMember.allClimbId = createTeamDto.allClimbId;
     teamMember.year = createTeamDto.year;
@@ -46,6 +47,7 @@ export class TeamService {
     if (!teamMember) {
       throw new NotFoundException('Team member not found');
     }
+    teamMember.isCoach = updateTeamDto.isCoach;
     teamMember.name = updateTeamDto.name;
     teamMember.allClimbId = updateTeamDto.allClimbId;
     teamMember.year = updateTeamDto.year;
