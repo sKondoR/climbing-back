@@ -15,6 +15,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { IGrant } from '../users/users.interfaces';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { TEAM, FRIENDS } from '../users/users.constants';
 
 @Controller('auth')
 export class AuthController {
@@ -60,8 +61,8 @@ export class AuthController {
         avatar_url: profile.photo_400,
         password: null,
         grant: IGrant.USER,
-        team: [],
-        friends: [],
+        team: TEAM,
+        friends: FRIENDS,
         pro: [],
       };
 
