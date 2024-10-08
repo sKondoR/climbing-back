@@ -8,6 +8,7 @@ import { ClimbersModule } from './climbers/climbers.module';
 import { ScrapingModule } from './scraping/scraping.module';
 import { DatabaseModule } from './database/database.module';
 import { TeamModule } from './team/team.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TeamModule } from './team/team.module';
     ScrapingModule,
     DatabaseModule,
     TeamModule,
+    ScheduleModule,
   ],
   controllers: [],
   providers: [JwtService],
