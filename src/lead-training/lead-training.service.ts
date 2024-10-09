@@ -16,11 +16,11 @@ export class LeadTrainingService {
   async create(
     createLeadTrainingDto: CreateLeadTrainingDto,
   ): Promise<LeadTrainingEntity> {
-    const team = new LeadTrainingEntity();
-    team.userId = createLeadTrainingDto.userId;
-    team.date = createLeadTrainingDto.date;
-    team.routes = createLeadTrainingDto.routes;
-    return await this.leadTrainingRepository.save(team);
+    const training = new LeadTrainingEntity();
+    training.userId = createLeadTrainingDto.userId;
+    training.date = createLeadTrainingDto.date;
+    training.routes = createLeadTrainingDto.routes;
+    return await this.leadTrainingRepository.save(training);
   }
 
   async findAll(): Promise<LeadTrainingEntity[]> {
@@ -31,20 +31,24 @@ export class LeadTrainingService {
     return await this.leadTrainingRepository.findOne({ where: { id } });
   }
 
+  async findAllByUser(userId: number): Promise<LeadTrainingEntity[]> {
+    return await this.leadTrainingRepository.find({ where: { userId } });
+  }
+
   async update(
     id: number,
     updateLeadTrainingDto: UpdateLeadTrainingDto,
   ): Promise<LeadTrainingEntity> {
-    const team = await this.leadTrainingRepository.findOne({
+    const training = await this.leadTrainingRepository.findOne({
       where: { id },
     });
-    if (!team) {
+    if (!training) {
       throw new NotFoundException('lead training not found');
     }
-    team.date = updateLeadTrainingDto.date;
-    team.routes = updateLeadTrainingDto.routes;
-    await this.leadTrainingRepository.update({ id }, team);
-    return team;
+    training.date = updateLeadTrainingDto.date;
+    training.routes = updateLeadTrainingDto.routes;
+    await this.leadTrainingRepository.update({ id }, training);
+    return training;
   }
 
   async removeAll(): Promise<void> {

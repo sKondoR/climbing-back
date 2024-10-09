@@ -26,9 +26,9 @@ export class LeadTrainingController {
     return this.leadTrainingService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.leadTrainingService.findOne(+id);
+  @Get(':userId')
+  findOne(@Param('userId') userId: number) {
+    return this.leadTrainingService.findAllByUser(+userId);
   }
 
   @Patch(':id')

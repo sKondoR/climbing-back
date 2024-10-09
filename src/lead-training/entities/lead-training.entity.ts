@@ -11,8 +11,9 @@ export class LeadTrainingEntity {
   @Column({})
   date: string;
 
-  @Column({
+  @Column('text', {
     nullable: true,
+    array: true,
   })
   routes: string[];
 }
