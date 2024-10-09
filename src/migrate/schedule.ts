@@ -17,13 +17,13 @@ export const SCHEDULE = [
     {
         weekDay: 'Четверг',
         fromTime: '15:00',
-        toTime: '21:00',
+        toTime: '16:30',
         place: 'Неолит Питаль Н.П.',
         type: 'BOULDER',
     },
     {
         weekDay: 'Пятница',
-        fromTime: '16:30',
+        fromTime: '17:00',
         toTime: '21:00',
         place: 'Неолит',
         type: 'BOULDER',
@@ -40,35 +40,40 @@ export const SCHEDULE = [
         fromTime: '9:00',
         toTime: '14:00',
         type: 'SCHOOL',
+        place: 'школа'
     },
     {
         weekDay: 'Вторник',
         fromTime: '9:00',
         toTime: '14:00',
         type: 'SCHOOL',
+        place: 'школа'
     },
     {
         weekDay: 'Среда',
         fromTime: '9:00',
         toTime: '14:00',
         type: 'SCHOOL',
+        place: 'школа'
     },
     {
         weekDay: 'Четверг',
         fromTime: '9:00',
         toTime: '14:00',
         type: 'SCHOOL',
+        place: 'школа'
     },
     {
         weekDay: 'Пятница',
         fromTime: '9:00',
         toTime: '14:00',
         type: 'SCHOOL',
+        place: 'школа'
     },
     {
         weekDay: 'Вторник',
-        fromTime: '16:00',
-        toTime: '17:30',
+        fromTime: '16:50',
+        toTime: '18:30',
         place: 'Рисование',
         type: 'HOBBY',
     },
