@@ -9,6 +9,7 @@ import { ScrapingModule } from './scraping/scraping.module';
 import { DatabaseModule } from './database/database.module';
 import { TeamModule } from './team/team.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { LeadTrainingModule } from './lead-training/lead-training.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     DatabaseModule,
     TeamModule,
     ScheduleModule,
+    LeadTrainingModule,
   ],
   controllers: [],
   providers: [JwtService],
