@@ -36,6 +36,9 @@ export class LeadTrainingController {
     @Param('id') id: string,
     @Body() updateLeadTrainingDto: UpdateLeadTrainingDto,
   ) {
+    if (!updateLeadTrainingDto.routes?.length) {
+      return this.leadTrainingService.remove(+id);
+    }
     return this.leadTrainingService.update(+id, updateLeadTrainingDto);
   }
 

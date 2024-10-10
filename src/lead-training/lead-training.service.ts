@@ -38,7 +38,7 @@ export class LeadTrainingService {
   async update(
     id: number,
     updateLeadTrainingDto: UpdateLeadTrainingDto,
-  ): Promise<LeadTrainingEntity> {
+  ): Promise<LeadTrainingEntity | string> {
     const training = await this.leadTrainingRepository.findOne({
       where: { id },
     });
