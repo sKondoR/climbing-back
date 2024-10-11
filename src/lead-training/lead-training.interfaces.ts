@@ -1,5 +1,7 @@
 export interface ILeadTraining {
-  routes: string[];
-  date: string;
   userId: number;
+  date: string;
+  routes: string[];
+  withStops: string[];
+  topRopes: string[];
 }

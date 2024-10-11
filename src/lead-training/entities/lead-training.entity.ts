@@ -16,4 +16,16 @@ export class LeadTrainingEntity {
     array: true,
   })
   routes: string[];
+
+  @Column('text', {
+    nullable: true,
+    array: true,
+  })
+  withStops: string[];
+
+  @Column('text', {
+    nullable: true,
+    array: true,
+  })
+  topRopes: string[];
 }

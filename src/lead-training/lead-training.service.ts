@@ -20,6 +20,8 @@ export class LeadTrainingService {
     training.userId = createLeadTrainingDto.userId;
     training.date = createLeadTrainingDto.date;
     training.routes = createLeadTrainingDto.routes;
+    training.withStops = createLeadTrainingDto.withStops;
+    training.topRopes = createLeadTrainingDto.topRopes;
     return await this.leadTrainingRepository.save(training);
   }
 
@@ -47,6 +49,8 @@ export class LeadTrainingService {
     }
     training.date = updateLeadTrainingDto.date;
     training.routes = updateLeadTrainingDto.routes;
+    training.withStops = updateLeadTrainingDto.withStops;
+    training.topRopes = updateLeadTrainingDto.topRopes;
     await this.leadTrainingRepository.update({ id }, training);
     return training;
   }
