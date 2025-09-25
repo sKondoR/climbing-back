@@ -25,13 +25,16 @@ export class ScrapingService {
       (await chromium?.executablePath) || LOCAL_CHROME_EXECUTABLE;
 
     const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
+      // args: chromium?.executablePath && chromium.args,
+      // defaultViewport: chromium?.executablePath && chromium.defaultViewport,
       executablePath,
-      headless: chromium.headless,
+      headless: false,
+      // headless: chromium?.executablePath ? chromium.headless : false
     });
 
-    const page = await browser.newPage();
+    // const page = await browser.newPage();
+    // get existing tab/page (first item in the array)
+    const [page] = await browser.pages();
     let result = [];
     let doRequests = true;
 
@@ -77,6 +80,7 @@ export class ScrapingService {
       }
 
       await browser.close();
+      console.log('routes: ', result);
       return {
         name: parseClimberName(climberName),
         ...filterRoutes(result),

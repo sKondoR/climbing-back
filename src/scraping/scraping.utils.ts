@@ -3,8 +3,9 @@ export const parseClimberName = (text) => {
   return result.slice(0, result.indexOf('\n'));
 };
 
-const findSameRoute = (arr, route) =>
-  arr.some((a) => a.name === route.name && a.grade === route.grade);
+const findSameRoute = (arr, route) => {
+  return arr.some((a) => a.name === route.name && a.grade === route.grade && a.text === route.text);
+}
 
 export const filterRoutes = (routes) =>
   routes.reduce(
