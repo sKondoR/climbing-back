@@ -6,6 +6,7 @@ import { CreateClimberDto } from './dto/create-climber.dto';
 import { UpdateClimberDto } from './dto/update-climber.dto';
 import { ClimberEntity } from './entities/climber.entity';
 import { getNow } from './climbers.utils';
+
 @Injectable()
 export class ClimbersService {
   constructor(
@@ -20,6 +21,7 @@ export class ClimbersService {
     climber.allClimbId = createClimberDto.allClimbId;
     climber.leads = createClimberDto.leads;
     climber.boulders = createClimberDto.boulders;
+    climber.routesCount = createClimberDto.routesCount;
     climber.updatedAt = getNow();
     return await this.climbersRepository.save(climber);
   }
@@ -30,6 +32,10 @@ export class ClimbersService {
 
   async findOne(id: number): Promise<ClimberEntity> {
     return await this.climbersRepository.findOne({ where: { id } });
+  }
+
+  async findOneByAllclimbId(allClimbId: number): Promise<ClimberEntity> {
+    return await this.climbersRepository.findOne({ where: { allClimbId } });
   }
 
   async update(
@@ -44,7 +50,9 @@ export class ClimbersService {
     user.allClimbId = updateClimberDto.allClimbId;
     user.leads = updateClimberDto.leads;
     user.boulders = updateClimberDto.boulders;
+    user.routesCount = updateClimberDto.routesCount;
     user.updatedAt = getNow();
+    console.log('>>> update', id, user);
     await this.climbersRepository.update({ id }, user);
     return user;
   }

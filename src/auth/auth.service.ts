@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { firstValueFrom } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -10,20 +11,35 @@ import { AuthEntity } from './entities/auth.entities';
 import { JwtPayloadInterface, AuthVKEntity } from './auth.interfaces';
 
 interface TokenResponse {
+  [x: string]: any;
+  access_token: string;
   id_token: string;
 }
 @Injectable()
 export class AuthService {
+  private readonly vkOauthUrl = 'https://id.vk.com/oauth2/auth';
+  private readonly vkApiUrl = 'https://api.vk.com/method/users.get';
+  private readonly redirectUri = process.env.NODE_ENV !== 'production' ? `https://localhost/signin` : '';
+  private readonly vkClientId = process.env.VK_APP_CLIENT_ID;
+
   constructor(
     private usersService: UsersService,
     private readonly jwtService: JwtService,
     private http: HttpService,
   ) {}
 
+  /**
+   * Валидация пользователя по JWT payload
+   */
   async validateUser(payload: JwtPayloadInterface): Promise<UserEntity | null> {
-    return await this.usersService.findById(payload.id);
+    return this.usersService.findById(payload.id);
   }
 
+  /**
+   * Аутентификация пользователя по allClimbId и паролю
+   * @param auth - данные аутентификации
+   * @param skipPasswordCheck - флаг пропуска проверки пароля (для внутренних вызовов)
+   */
   async authenticate(
     auth: AuthEntity,
     skipPasswordCheck: boolean = false,
@@ -31,7 +47,7 @@ export class AuthService {
     const user = await this.usersService.findByAllClimbId(auth.allClimbId);
 
     if (!user) {
-      throw new BadRequestException();
+      throw new BadRequestException('User not found');
     }
 
     const isRightPassword =
@@ -43,51 +59,101 @@ export class AuthService {
       throw new BadRequestException('Invalid credentials');
     }
 
+    if (!user.id) {
+      throw new BadRequestException('User ID is missing');
+    }
+
     return {
       ...auth,
       password: await this.jwtService.sign({ id: user.id }),
     };
   }
 
-  async getVkToken(auth: AuthVKEntity): Promise<TokenResponse | undefined> {
-    const redirect_url = `${process.env.APP_HOST}signin`;
-
-    const queryParamsString =
-      `grant_type=authorization_code` +
-      `&redirect_uri=${redirect_url}` +
-      `&code_verifier=${auth.code_verifier}` +
-      `&client_id=${process.env.VK_APP_CLIENT_ID}` +
-      `&device_id=${auth.device_id}` +
-      `&state=${auth.state}`;
-
-    let tokens: TokenResponse | undefined;
+  /**
+   * Получение ID-токена от VK через OAuth2
+   * @param auth - данные OAuth от VK
+   * @returns объект с id_token
+   */
+  async getVkToken(auth: AuthVKEntity): Promise<TokenResponse> {
+    const queryParams = new URLSearchParams({
+      grant_type: 'authorization_code',
+      redirect_uri: this.redirectUri,
+      code_verifier: auth.code_verifier,
+      client_id: this.vkClientId,
+      device_id: auth.device_id,
+      state: auth.state,
+    });
 
     try {
-      const response = await this.http
-        .post(
-          `https://id.vk.com/oauth2/auth?${queryParamsString}`,
-          new URLSearchParams({ code: auth.code }).toString(),
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
-        )
-        .toPromise();
+      const response = await firstValueFrom(
+        this.http
+          .post<TokenResponse>(
+            `${this.vkOauthUrl}?${queryParams.toString()}`,
+            new URLSearchParams({ code: auth.code }).toString(),
+            {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+            },
+          )
+          .pipe(
+            catchError((error) => {
+              throw new BadRequestException(
+                'Failed to obtain token from VK: ' + (error.response?.data?.error_description || error.message),
+              );
+            }),
+          ),
+      );
 
-      if (response.status !== 200) {
-        throw new BadRequestException(`HTTP error! status: ${response.status}`);
+      if (response?.data?.error_description) {
+        throw new BadRequestException(response?.data?.error_description);
       }
 
-      tokens = response.data as TokenResponse;
+      return { access_token: response.data.access_token, id_token: response.data.id_token };
     } catch (error) {
-      throw error;
+      // Ошибки уже обрабатываются в catchError, но на случай fallback
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException('Unexpected error during VK token exchange');
     }
-
-    return tokens;
   }
 
+  /**
+   * Получение данных пользователя из VK API
+   * @param userId - ID пользователя VK
+   * @param token - access token
+   * @returns данные пользователя
+   */
   async getUserDataFromVk(userId: string, token: string): Promise<any> {
-    return firstValueFrom(
-      this.http.get(
-        `https://api.vk.com/method/users.get?user_ids=${userId}&fields=photo_400,has_mobile,home_town,contacts,mobile_phone&access_token=${token}&v=5.120`,
-      ),
-    );
+    const params = new URLSearchParams({
+      fields: 'photo_400,has_mobile,home_town,contacts,mobile_phone',
+      access_token: token,
+      v: '5.120',
+    });
+
+    try {
+      const response = await firstValueFrom(
+        this.http.get(this.vkApiUrl, { params }).pipe(
+          catchError((error) => {
+            throw new BadRequestException(
+              'Failed to fetch user data from VK: ' + (error.response?.data?.error?.error_msg || error.message),
+            );
+          }),
+        ),
+      );
+
+      if (response?.data?.error) {
+        throw new BadRequestException(
+          'Failed to fetch user data from VK: ' + response?.data?.error?.error_msg
+        );
+      }
+      return response || null;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException('Unexpected error during VK user data fetch');
+    }
   }
 }

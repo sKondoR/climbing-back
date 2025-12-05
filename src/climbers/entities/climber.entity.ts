@@ -27,6 +27,9 @@ export class ClimberEntity {
   })
   boulders: IRoute[];
 
+  @Column({ type: 'int', default: 0 })
+  routesCount: number;
+
   @Column()
   updatedAt: string;
 }

@@ -9,5 +9,6 @@ import { ClimbersController } from './climbers.controller';
   imports: [TypeOrmModule.forFeature([ClimberEntity])],
   controllers: [ClimbersController],
   providers: [ClimbersService],
+  exports: [ClimbersService],
 })
 export class ClimbersModule {}

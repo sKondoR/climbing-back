@@ -25,9 +25,15 @@ export class UsersService {
     climber.password = createUserDto.password
       ? await this.getHash(createUserDto.password)
       : null;
+    climber.allClimbId = createUserDto.allClimbId;
+    climber.vk_id = createUserDto.vk_id;
+    climber.avatar_url = createUserDto.avatar_url;
     climber.name = createUserDto.name;
     climber.grant = createUserDto.grant;
     climber.allClimbId = createUserDto.allClimbId;
+    climber.team = createUserDto.team;
+    climber.friends = createUserDto.friends;
+    climber.pro = createUserDto.pro;
     return await this.usersRepository.save(climber);
   }
 

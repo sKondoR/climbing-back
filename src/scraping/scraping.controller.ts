@@ -5,11 +5,11 @@ import { IClimberParse } from './scraping.interfaces';
 
 @Controller('allClimb')
 export class ScrapingController {
-  constructor(private readonly appService: ScrapingService) {}
+  constructor(private readonly scrapingService: ScrapingService) {}
 
   @Get()
   async getClimberById(@Query('id') id?: string): Promise<IClimberParse> {
-    const climber = await this.appService.getClimberById(id);
+    const climber = await this.scrapingService.getClimberById(id);
     return climber;
   }
 }

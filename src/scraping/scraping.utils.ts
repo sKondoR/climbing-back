@@ -1,25 +1,34 @@
-export const parseClimberName = (text) => {
-  const result = text.replaceAll('  ', '');
-  return result.slice(0, result.indexOf('\n'));
+export const parseClimberInfo = (text) => {
+  const result = text.replaceAll('  ', '').split('\n');
+  return  {
+    name: result[0],
+    routesCount: Number(result[2].replace('Пролазов в AllClimb ', '')),
+  };
 };
 
 const findSameRoute = (arr, route) => {
-  return arr.some((a) => a.name === route.name && a.grade === route.grade && a.text === route.text);
+  return arr.some((item) => item.name === route.name && item.grade === route.grade && item.text === route.text);
 }
 
-export const filterRoutes = (routes) =>
-  routes.reduce(
-    (acc, route) => {
-      if (route.isBoulder && !findSameRoute(acc.boulders, route)) {
-        acc.boulders.push(route);
-      }
-      if (!route.isBoulder && !findSameRoute(acc.leads, route)) {
-        acc.leads.push(route);
-      }
-      return acc;
-    },
-    {
-      leads: [],
-      boulders: [],
-    },
-  );
+export const filterRoutes = (routes) => {
+  const leadsMap = new Map();
+  const bouldersMap = new Map();
+
+  const getKey = (route) => `${route.name}|${route.grade}|${route.text}`;
+
+  const leads = [];
+  const boulders = [];
+
+  for (const route of routes) {
+    const key = getKey(route);
+    const map = route.isBoulder ? bouldersMap : leadsMap;
+    const arr = route.isBoulder ? boulders : leads;
+
+    if (!map.has(key)) {
+      map.set(key, true);
+      arr.push(route);
+    }
+  }
+
+  return { leads, boulders };
+};

@@ -35,15 +35,8 @@ export class AuthController {
     }
 
     const hasIdToken = authData.hasOwnProperty('id_token');
-
     if (!hasIdToken) {
       throw new HttpException(`No VK id_token: `, authData);
-    }
-
-    const _user = await this.userService.findByVkId(authData.user_id);
-
-    if (_user) {
-      return this.authService.authenticate(_user);
     }
 
     try {
@@ -51,14 +44,19 @@ export class AuthController {
         authData.user_id,
         authData.access_token,
       );
+      
+      const vkUser = data.response[0];
+      const existedUser = vkUser.id && await this.userService.findByVkId(vkUser.id);
 
-      const profile = data.response[0];
+      if (existedUser.avatar_url) {
+        return this.authService.authenticate(existedUser);
+      }
 
       const newUser = {
-        vk_id: authData.user_id,
+        vk_id: vkUser.id,
         allClimbId: authData.allClimbId,
-        name: `${profile.first_name} ${profile.last_name}`,
-        avatar_url: profile.photo_400,
+        name: `${vkUser.first_name} ${vkUser.last_name}`,
+        avatar_url: vkUser.photo_400,
         password: null,
         grant: IGrant.USER,
         team: TEAM,

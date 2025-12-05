@@ -1,5 +1,7 @@
+import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const chromium = require('@sparticuz/chromium');
+import { ClimbersService } from '../climbers/climbers.service';
 import puppeteer from 'puppeteer';
 
 import { IClimberParse } from './scraping.interfaces';
@@ -8,87 +10,131 @@ import {
   LOCAL_CHROME_EXECUTABLE,
   BUTTON_MORE_SELECTOR,
 } from './scraping.constants';
-import { filterRoutes, parseClimberName } from './scraping.utils';
+import { filterRoutes, parseClimberInfo } from './scraping.utils';
 
 chromium.setHeadlessMode = false;
 
-const delay = (time) => {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, time);
-  });
-};
-
 const LOAD_DELAY = 2000;
+
+@Injectable()
 export class ScrapingService {
+  constructor(private climbersService: ClimbersService) {}
+
+  private async delay(time: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
   async getClimberById(id: string): Promise<IClimberParse> {
-    const executablePath =
-      (await chromium?.executablePath) || LOCAL_CHROME_EXECUTABLE;
-
-    const browser = await puppeteer.launch({
-      // args: chromium?.executablePath && chromium.args,
-      // defaultViewport: chromium?.executablePath && chromium.defaultViewport,
-      executablePath,
-      headless: false,
-      // headless: chromium?.executablePath ? chromium.headless : false
-    });
-
-    // const page = await browser.newPage();
-    // get existing tab/page (first item in the array)
-    const [page] = await browser.pages();
-    let result = [];
-    let doRequests = true;
-
+    let browser;
     try {
-      await page.goto(`${ALLCLIMB_URL}/${id}`);
+      const executablePath =
+        (await chromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
 
-      const button = await page.$$(BUTTON_MORE_SELECTOR);
-      const climberName = await page.$$eval(
+      browser = await puppeteer.launch({
+        executablePath,
+        headless: false,
+        // headless: !executablePath.includes('local'), // Используем headless только если не локальный Chrome
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-web-security',
+          '--disable-features=IsolateOrigins,site-per-process',
+        ],
+      });
+
+      const [page] = await browser.pages();
+      await page.setViewport({ width: 1280, height: 800 });
+
+      // Не грузить картинки для ускорения загрузки
+      await page.setRequestInterception(true);
+      page.on('request', (req) => {
+        const blockedResources = ['image', 'stylesheet', 'font', 'media'];
+        if (blockedResources.includes(req.resourceType())) {
+          req.abort();
+        } else {
+          req.continue();
+        }
+      });
+
+      // Переход на страницу альпиниста
+      await page.goto(`${ALLCLIMB_URL}/${id}`, {
+        waitUntil: 'networkidle2',
+        timeout: 30000,
+      });
+
+      // Получение имени альпиниста
+      const climberInfo = await page.$eval(
         '.climber-info-block > p',
-        (elements) => {
-          return elements[0].textContent.trim();
-        },
+        (el) => el.textContent?.trim() || '',
       );
+      const { name, routesCount } = parseClimberInfo(climberInfo);
 
-      const getRoutes = async () => {
-        const data = await page.$$eval('.news-preview', (elements) => {
+      const existedUser = await this.climbersService.findOneByAllclimbId(Number(id));
+      if (existedUser?.routesCount && routesCount === existedUser.routesCount) return {};
+      console.log('existedUser.routesCount>', existedUser?.routesCount)
+      console.log('routesCount>', routesCount)
+
+      // Функция для извлечения маршрутов
+      const getRoutes = async (): Promise<any[]> => {
+        return await page.$$eval('.news-preview', (elements) => {
           return elements.map((el) => {
-            const allText = el
-              .querySelector('.news-preview-title')
-              .textContent.trim();
+            const titleEl = el.querySelector('.news-preview-title');
+            const allText = titleEl?.textContent?.trim() || '';
+            const gradeEl = el.querySelector('h4');
+            const nameEl = el.querySelector('b');
+            const dateEl = el.querySelector('.news-preview-date');
+
             return {
               isBoulder: allText.includes('Боулдер'),
               isTopRope: allText.includes('Верхняя страховка.'),
-              grade: el.querySelector('h4').textContent.trim(),
-              name: el.querySelector('b').textContent.trim(),
-              date: el.querySelector('.news-preview-date').textContent.trim(),
+              grade: gradeEl?.textContent?.trim() || '',
+              name: nameEl?.textContent?.trim() || '',
+              date: dateEl?.textContent?.trim() || '',
               text: allText,
             };
           });
         });
-        return data;
       };
 
-      result = await getRoutes();
-      while (doRequests) {
-        await button[0].click();
-        await page.waitForSelector('#wall', { visible: true });
-        await page.waitForSelector('#wall', { visible: false });
-        await delay(LOAD_DELAY);
-        const data = await getRoutes();
-        doRequests = data.length > result.length;
-        result = data;
+      let result = await getRoutes();
+      let previousLength = 0;
+
+      // Клик по кнопке "Еще" до тех пор, пока загружаются новые элементы
+      while (result.length > previousLength) {
+        previousLength = result.length;
+
+        const button = await page.$(BUTTON_MORE_SELECTOR);
+        if (!button) break;
+
+        try {
+          await button.click();
+          // Ожидание скрытия и появления контейнера (индикатор загрузки)
+          await page.waitForSelector('#wall', { visible: true, timeout: 5000 }).catch(() => {});
+          await page.waitForSelector('#wall', { visible: false, timeout: 10000 });
+          await this.delay(LOAD_DELAY);
+
+          result = await getRoutes();
+        } catch (error) {
+          console.warn('Ошибка при загрузке дополнительных маршрутов:', error);
+          break;
+        }
       }
 
-      await browser.close();
-      console.log('routes: ', result);
+      console.log('routes:', result);
+
       return {
-        name: parseClimberName(climberName),
+        name,
+        routesCount: Number(routesCount),
         ...filterRoutes(result),
       };
     } catch (error) {
-      console.error('Error while scraping job listings:', error);
+      console.error('Ошибка при парсинге данных скалолаза:', error);
+      throw error;
     } finally {
-      await browser.close();
+      if (browser) {
+        await browser.close();
+      }
     }
   }
 }
