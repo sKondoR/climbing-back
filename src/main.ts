@@ -7,14 +7,14 @@ import { config } from 'dotenv';
 config();
 
 async function bootstrap() {
-  const isDev = process.env.NODE_ENV === 'dev';
+  // const isDev = process.env.NODE_ENV === 'dev';
 
-  const httpsOptions = isDev ? {
-    cert: fs.readFileSync('localhost+2.pem'),
-    key: fs.readFileSync('localhost+2-key.pem'),
-  } : {};
+  // const httpsOptions = isDev ? {
+  //   cert: fs.readFileSync('localhost+2.pem'),
+  //   key: fs.readFileSync('localhost+2-key.pem'),
+  // } : {};
 
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule);
 
   // app.enableCors({
   //   origin: [
