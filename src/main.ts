@@ -9,12 +9,15 @@ config();
 async function bootstrap() {
   const isDev = process.env.NODE_ENV === 'dev';
 
-  const httpsOptions = {
-    cert: fs.readFileSync('localhost+2.pem'),
-    key: fs.readFileSync('localhost+2-key.pem'),
-  };
-
-  const app = await NestFactory.create(AppModule, isDev ? { httpsOptions } : undefined);
+  let app;
+  if(isDev) {
+    app = await NestFactory.create(AppModule, { httpsOptions: {
+      cert: fs.readFileSync('localhost+2.pem'),
+      key: fs.readFileSync('localhost+2-key.pem'),
+    }});
+  } else {
+    app = await NestFactory.create(AppModule);
+  }
 
   // app.enableCors({
   //   origin: [
