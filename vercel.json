@@ -20,8 +20,5 @@
                 "OPTIONS"
             ]
         }
-    ],
-    "engines": {
-        "node": "^18"
-    }
+    ]
 }
