@@ -17,7 +17,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { httpsOptions });
 
   app.enableCors({
-    origin: isDev ? 'https://localhost' : 'https://climbing-web.vercel.app',
+      origin: (origin, callback) => {
+        const allowedOrigins = [
+          'https://localhost',
+          'https://climbing-web.vercel.app',
+          'https://climbing-web.vercel.app/',
+        ];
+
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          console.log('Blocked CORS for origin:', origin);
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
