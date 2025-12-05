@@ -32,8 +32,7 @@ export class ScrapingService {
 
       browser = await puppeteer.launch({
         executablePath,
-        headless: false,
-        // headless: !executablePath.includes('local'), // Используем headless только если не локальный Chrome
+        headless: !executablePath.includes('local'), // Используем headless только если не локальный Chrome
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
@@ -41,6 +40,7 @@ export class ScrapingService {
           '--disable-web-security',
           '--disable-features=IsolateOrigins,site-per-process',
         ],
+        ignoreDefaultArgs: ['--disable-extensions']
       });
 
       const [page] = await browser.pages();
