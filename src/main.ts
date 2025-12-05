@@ -7,8 +7,9 @@ import { config } from 'dotenv';
 config();
 
 async function bootstrap() {
+  const isDev = process.env.NODE_ENV === 'dev';
 
-  const httpsOptions = process.env.NODE_ENV === 'dev' ? {
+  const httpsOptions = isDev ? {
     cert: fs.readFileSync('localhost+2.pem'),
     key: fs.readFileSync('localhost+2-key.pem'),
   } : {};
@@ -16,7 +17,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { httpsOptions });
 
   app.enableCors({
-    origin: 'https://localhost',
+    origin: isDev ? 'https://localhost' : '*',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
