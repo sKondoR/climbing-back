@@ -29,7 +29,8 @@ export class ScrapingService {
       ? await chromium.executablePath()
       : playwright.chromium.executablePath();
     
-      console.log('executablePath: ', executablePath);
+    console.log('executablePath: ', executablePath);
+    
     browser = await playwright.chromium.launch({
       executablePath,
       headless: true, // Используйте false для отладки
@@ -111,17 +112,25 @@ export class ScrapingService {
       attempts++;
 
       const button = await page.$(BUTTON_MORE_SELECTOR);
-      if (!button) break;
+      if (!button) {
+        console.log('Кнопка "Еще" больше не найдена.');
+        break;
+      }
+
+      // Проверяем, не отключена ли кнопка
+      const isDisabled = await button.evaluate((btn) => (btn as HTMLButtonElement).disabled);
+      if (isDisabled) {
+        console.log('Кнопка "Еще" отключена.');
+        break;
+      }
 
       try {
         // Playwright лучше обрабатывает клики с ожиданием
         await button.click({ timeout: 5000 });
         
         // Ожидание загрузки новых элементов
-        await page.waitForLoadState('networkidle', { timeout: 10000 });
         await this.delay(LOAD_DELAY);
-        
-        // Альтернативный способ - ждать появления новых элементов
+
         try {
           await page.waitForSelector(`${BUTTON_MORE_SELECTOR}:not(:disabled)`, { 
             timeout: 5000,
