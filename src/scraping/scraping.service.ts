@@ -30,9 +30,9 @@ async function cleanupTempDir() {
     
     // Проходим по всем файлам
     for (const file of files) {
-      // Фильтруем только временные файлы браузера (Playwright/Chromium)
+      // Фильтруем только временные файлы браузера (Chromium)
       // Важно: не удаляем системные файлы, только браузерные
-      if (file.includes('playwright') || file.includes('chromium')) {
+      if (file.includes('core.chromium')) {
         const filePath = path.join(tempDir, file);
         
         try {
