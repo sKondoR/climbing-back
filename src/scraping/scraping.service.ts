@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const chromium = require('@sparticuz/chromium');
+// const chromium = require('@sparticuz/chromium');
 import { ClimbersService } from '../climbers/climbers.service';
 import puppeteer from 'puppeteer';
 
@@ -12,7 +12,7 @@ import {
 } from './scraping.constants';
 import { filterRoutes, parseClimberInfo } from './scraping.utils';
 
-chromium.setHeadlessMode = false;
+// chromium.setHeadlessMode = false;
 
 const LOAD_DELAY = 2000;
 
@@ -27,12 +27,13 @@ export class ScrapingService {
   async getClimberById(id: string): Promise<IClimberParse> {
     let browser;
     try {
-      const executablePath =
-        (await chromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
+      // const executablePath =
+      //   (await chromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
 
+      console.log('here1');
       browser = await puppeteer.launch({
-        executablePath,
-        headless: !executablePath.includes('local'), // Используем headless только если не локальный Chrome
+        // executablePath,
+        // headless: !executablePath.includes('local'), // Используем headless только если не локальный Chrome
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
@@ -40,9 +41,10 @@ export class ScrapingService {
           '--disable-web-security',
           '--disable-features=IsolateOrigins,site-per-process',
         ],
-        ignoreDefaultArgs: ['--disable-extensions']
+        // ignoreDefaultArgs: ['--disable-extensions']
       });
 
+      console.log('here2');
       const [page] = await browser.pages();
       await page.setViewport({ width: 1280, height: 800 });
 
@@ -57,13 +59,14 @@ export class ScrapingService {
         }
       });
 
-      // Переход на страницу альпиниста
+      console.log('here3');
+      // Переход на страницу скалолаза
       await page.goto(`${ALLCLIMB_URL}/${id}`, {
         waitUntil: 'networkidle2',
         timeout: 30000,
       });
 
-      // Получение имени альпиниста
+      // Получение имени скалолаза 
       const climberInfo = await page.$eval(
         '.climber-info-block > p',
         (el) => el.textContent?.trim() || '',
@@ -71,7 +74,7 @@ export class ScrapingService {
       const { name, routesCount } = parseClimberInfo(climberInfo);
 
       const existedUser = await this.climbersService.findOneByAllclimbId(Number(id));
-      if (existedUser?.routesCount && routesCount === existedUser.routesCount) return {};
+      // if (existedUser?.routesCount && routesCount === existedUser.routesCount) return {};
       console.log('existedUser.routesCount>', existedUser?.routesCount)
       console.log('routesCount>', routesCount)
 
