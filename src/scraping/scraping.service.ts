@@ -9,8 +9,69 @@ import {
   BUTTON_MORE_SELECTOR,
 } from './scraping.constants';
 import { filterRoutes, parseClimberInfo } from './scraping.utils';
+const os = require('os');
+const fs = require('fs');
+const path = require('path');
+
 
 const LOAD_DELAY = 2000;
+
+/**
+ * Очищает временные файлы браузера из системного temp-каталога
+ * Это критически важно для serverless-сред, где дисковое пространство ограничено
+ */
+async function cleanupTempDir() {
+  // Получаем системный временный каталог (в Lambda это /tmp)
+  const tempDir = os.tmpdir();
+  
+  try {
+    // Читаем все файлы в temp-каталоге
+    const files = await fs.promises.readdir(tempDir);
+    
+    // Проходим по всем файлам
+    for (const file of files) {
+      // Фильтруем только временные файлы браузера (Puppeteer/Chromium)
+      // Важно: не удаляем системные файлы, только браузерные
+      if (file.startsWith('puppeteer') || file.startsWith('chromium')) {
+        const filePath = path.join(tempDir, file);
+        
+        try {
+          // Удаляем файл
+          await fs.promises.unlink(filePath);
+          console.log(`Удален временный файл: ${filePath}`);
+        } catch (e) {
+          // Логируем, но не прерываем выполнение при ошибке удаления
+          console.warn(`Не удалось удалить ${filePath}:`, e.message);
+        }
+      }
+    }
+  } catch (error) {
+    // Если не можем прочитать каталог, логируем ошибку
+    console.error('Ошибка при очистке временного каталога:', error);
+  }
+}
+
+/**
+ * Проверяет доступное дисковое пространство
+ * @returns {number} Количество свободных МБ
+ * @throws {Error} Если памяти меньше 100МБ
+ */
+function checkDiskSpace() {
+  // Получаем информацию о памяти
+  const freeMB = os.freemem() / (1024 * 1024);
+  const totalMB = os.totalmem() / (1024 * 1024);
+  
+  // Логируем состояние памяти для отладки
+  console.log(`Память: ${freeMB.toFixed(0)}МБ свободно из ${totalMB.toFixed(0)}МБ`);
+  
+  // Бросаем ошибку, если памяти слишком мало (меньше 100МБ)
+  // Это предотвратит краш из-за нехватки памяти
+  if (freeMB < 100) {
+    throw new Error(`Недостаточно памяти: осталось всего ${freeMB.toFixed(0)}МБ`);
+  }
+  
+  return freeMB;
+}
 
 @Injectable()
 export class ScrapingService {
@@ -23,6 +84,13 @@ export class ScrapingService {
   async getClimberById(id: string): Promise<IClimberParse> {
   let browser;
   try {
+
+      // Проверяем доступное место перед началом работы
+  checkDiskSpace();
+  
+  // Очищаем временные файлы от предыдущих запусков
+  await cleanupTempDir();
+
     console.log('Starting Playwright browser...');
 
     const executablePath = process.env.VERCEL 
