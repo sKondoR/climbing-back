@@ -123,15 +123,15 @@ export class ScrapingService {
       const page = await context.newPage();
 
       // Блокировка ресурсов для ускорения
-      await page.route('**/*', (route) => {
-        const resourceType = route.request().resourceType();
-        const blockedResources = ['image', 'stylesheet', 'font', 'media'];
-        if (blockedResources.includes(resourceType)) {
-          route.abort();
-        } else {
-          route.continue();
-        }
-      });
+      // await page.route('**/*', (route) => {
+      //   const resourceType = route.request().resourceType();
+      //   const blockedResources = ['image', 'stylesheet', 'font', 'media'];
+      //   if (blockedResources.includes(resourceType)) {
+      //     route.abort();
+      //   } else {
+      //     route.continue();
+      //   }
+      // });
 
       console.log('Navigating to climber page...');
       // Переход на страницу скалолаза
