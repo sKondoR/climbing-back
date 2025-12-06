@@ -37,7 +37,7 @@ async function cleanupTempDir() {
         
         try {
           // Удаляем файл
-          await fs.promises.unlink(filePath);
+          // await fs.promises.unlink(filePath);
           console.log(`Удален временный файл: ${filePath}`);
         } catch (e) {
           // Логируем, но не прерываем выполнение при ошибке удаления
