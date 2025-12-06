@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "set AWS_LAMBDA_FUNCTION_NAME=true&&nest build",
-    "postinstall": "npm install playwright && npx playwright install",
+    "postinstall": "npm install playwright && npx playwright install --cache-dir /home/sbx_user1051/.cache",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "set NODE_ENV=dev&&nest start",
     "start:dev": "set NODE_ENV=dev&& nest start --watch",
