@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as playwright from 'playwright-core';
-const chromium = require('@sparticuz/chromium-min');
+const chromium = require('@sparticuz/chromium');
 import { ClimbersService } from '../climbers/climbers.service';
 import { IClimberParse } from './scraping.interfaces';
 import {

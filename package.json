@@ -29,7 +29,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.2",
-    "@sparticuz/chromium": "^106.0.2",
+    "@sparticuz/chromium": "^143.0.0",
     "@sparticuz/chromium-min": "^143.0.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
