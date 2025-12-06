@@ -25,7 +25,7 @@ export class ScrapingService {
     console.log('Starting Playwright browser...');
     
     browser = await playwright.chromium.launch({
-      headless: false, // Используйте false для отладки
+      headless: true, // Используйте false для отладки
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
