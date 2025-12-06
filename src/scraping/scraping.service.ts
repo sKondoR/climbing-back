@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const playwright = require('playwright-core');
-
-// const chromium = require('@sparticuz/chromium');
+import * as playwright from 'playwright-core';
 import { ClimbersService } from '../climbers/climbers.service';
-
 import { IClimberParse } from './scraping.interfaces';
 import {
   ALLCLIMB_URL,
@@ -12,8 +8,6 @@ import {
   BUTTON_MORE_SELECTOR,
 } from './scraping.constants';
 import { filterRoutes, parseClimberInfo } from './scraping.utils';
-
-// chromium.setHeadlessMode = false;
 
 const LOAD_DELAY = 2000;
 
@@ -31,7 +25,7 @@ export class ScrapingService {
     console.log('Starting Playwright browser...');
     
     browser = await playwright.chromium.launch({
-      headless: true, // Используйте false для отладки
+      headless: false, // Используйте false для отладки
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
