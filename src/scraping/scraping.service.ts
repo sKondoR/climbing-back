@@ -31,9 +31,11 @@ export class ScrapingService {
       // const executablePath =
       //   (await chromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
 
+      const executablePath = '/vercel/.cache/puppeteer/chrome/linux-143.0.7499.40/chrome-linux64/chrome';
+
       console.log('here1', await chromium.executablePath);
       browser =  await puppeteer.launch({
-        executablePath: await chromium.executablePath,
+        executablePath: executablePath,
         headless: chromium.headless,
         // executablePath,
         // headless: !executablePath.includes('local'), // Используем headless только если не локальный Chrome
