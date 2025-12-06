@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const playwright = require('playwright');
+const playwright = require('playwright-core');
 
 // const chromium = require('@sparticuz/chromium');
 import { ClimbersService } from '../climbers/climbers.service';
