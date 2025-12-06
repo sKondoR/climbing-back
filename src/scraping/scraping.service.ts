@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
+const chromium = require('puppeteer-lambda');
 // const chromium = require('@sparticuz/chromium');
 import { ClimbersService } from '../climbers/climbers.service';
 import puppeteer from 'puppeteer';
@@ -7,7 +8,7 @@ import puppeteer from 'puppeteer';
 import { IClimberParse } from './scraping.interfaces';
 import {
   ALLCLIMB_URL,
-  LOCAL_CHROME_EXECUTABLE,
+  // LOCAL_CHROME_EXECUTABLE,
   BUTTON_MORE_SELECTOR,
 } from './scraping.constants';
 import { filterRoutes, parseClimberInfo } from './scraping.utils';
@@ -30,8 +31,10 @@ export class ScrapingService {
       // const executablePath =
       //   (await chromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
 
-      console.log('here1');
-      browser = await puppeteer.launch({
+      console.log('here1', await chromium.executablePath);
+      browser =  await puppeteer.launch({
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless,
         // executablePath,
         // headless: !executablePath.includes('local'), // Используем headless только если не локальный Chrome
         args: [
