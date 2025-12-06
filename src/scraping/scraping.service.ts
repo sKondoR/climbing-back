@@ -43,6 +43,13 @@ export class ScrapingService {
           '--disable-dev-shm-usage',
           '--disable-web-security',
           '--disable-features=IsolateOrigins,site-per-process',
+          '--disable-features=WebAuthentication',
+          '--disable-webauthn',
+          '--disable-blink-features=WebAuthenticationAPI',
+          '--disable-blink-features=InterestCohortAPI',
+          '--disable-features=WebAuthenticationCable',
+          '--flag-switches-begin',
+          '--flag-switches-end'
         ],
         // ignoreDefaultArgs: ['--disable-extensions']
       });
