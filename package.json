@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "set AWS_LAMBDA_FUNCTION_NAME=true&&nest build",
-    "postinstall": "npx playwright install --with-deps chromium",
+    "postinstall": "npm install playwright-core && npx playwright install chromium",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "set NODE_ENV=dev&&nest start",
     "start:dev": "set NODE_ENV=dev&& nest start --watch",
