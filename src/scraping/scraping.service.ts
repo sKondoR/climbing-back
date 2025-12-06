@@ -30,9 +30,9 @@ async function cleanupTempDir() {
     
     // Проходим по всем файлам
     for (const file of files) {
-      // Фильтруем только временные файлы браузера (Puppeteer/Chromium)
+      // Фильтруем только временные файлы браузера (Playwright/Chromium)
       // Важно: не удаляем системные файлы, только браузерные
-      if (file.startsWith('puppeteer') || file.startsWith('chromium')) {
+      if (file.includes('playwright') || file.includes('chromium')) {
         const filePath = path.join(tempDir, file);
         
         try {
