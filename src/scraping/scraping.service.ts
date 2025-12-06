@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as playwright from 'playwright-core';
+const chromium = require('@sparticuz/chromium-min');
 import { ClimbersService } from '../climbers/climbers.service';
 import { IClimberParse } from './scraping.interfaces';
 import {
@@ -23,8 +24,14 @@ export class ScrapingService {
   let browser;
   try {
     console.log('Starting Playwright browser...');
+
+    const executablePath = process.env.VERCEL 
+      ? await chromium.executablePath()
+      : playwright.chromium.executablePath();
     
+      console.log('executablePath: ', executablePath);
     browser = await playwright.chromium.launch({
+      executablePath,
       headless: true, // Используйте false для отладки
       args: [
         '--no-sandbox',
