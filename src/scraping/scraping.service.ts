@@ -65,7 +65,7 @@ export class ScrapingService {
     console.log('Navigating to climber page...');
     // Переход на страницу скалолаза
     await page.goto(`${ALLCLIMB_URL}/${id}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: 30000,
     });
 
