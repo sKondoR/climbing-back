@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const playwright = require('playwright-core');
+const playwright = require('playwright');
 
 // const chromium = require('@sparticuz/chromium');
 import { ClimbersService } from '../climbers/climbers.service';
@@ -31,7 +31,6 @@ export class ScrapingService {
     console.log('Starting Playwright browser...');
     
     browser = await playwright.chromium.launch({
-      executablePath: '/vercel/.cache/ms-playwright/chromium_headless_shell-1200/chrome-headless-shell-linux64/chrome-headless-shell',
       headless: true, // Используйте false для отладки
       args: [
         '--no-sandbox',
