@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const chromium = require('puppeteer-lambda');
+const playwright = require('playwright-core');
+
 // const chromium = require('@sparticuz/chromium');
 import { ClimbersService } from '../climbers/climbers.service';
-import puppeteer from 'puppeteer';
 
 import { IClimberParse } from './scraping.interfaces';
 import {
@@ -26,130 +26,138 @@ export class ScrapingService {
   }
 
   async getClimberById(id: string): Promise<IClimberParse> {
-    let browser;
-    try {
-      // const executablePath =
-      //   (await chromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
+  let browser;
+  try {
+    console.log('Starting Playwright browser...');
+    
+    browser = await playwright.chromium.launch({
+      headless: true, // Используйте false для отладки
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins,site-per-process',
+        '--disable-webauthn',
+      ],
+    });
 
-      const executablePath = '/vercel/.cache/puppeteer/chrome/linux-143.0.7499.40/chrome-linux64/chrome';
+    console.log('Browser launched, creating context and page...');
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 800 },
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    });
+    
+    const page = await context.newPage();
 
-      console.log('here1', await chromium.executablePath);
-      browser =  await puppeteer.launch({
-        executablePath: executablePath,
-        headless: chromium.headless,
-        // executablePath,
-        // headless: !executablePath.includes('local'), // Используем headless только если не локальный Chrome
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-web-security',
-          '--disable-features=IsolateOrigins,site-per-process',
-          '--disable-features=WebAuthentication',
-          '--disable-webauthn',
-          '--disable-blink-features=WebAuthenticationAPI',
-          '--disable-blink-features=InterestCohortAPI',
-          '--disable-features=WebAuthenticationCable',
-          '--flag-switches-begin',
-          '--flag-switches-end'
-        ],
-        // ignoreDefaultArgs: ['--disable-extensions']
-      });
-
-      console.log('here2');
-      const [page] = await browser.pages();
-      await page.setViewport({ width: 1280, height: 800 });
-
-      // Не грузить картинки для ускорения загрузки
-      await page.setRequestInterception(true);
-      page.on('request', (req) => {
-        const blockedResources = ['image', 'stylesheet', 'font', 'media'];
-        if (blockedResources.includes(req.resourceType())) {
-          req.abort();
-        } else {
-          req.continue();
-        }
-      });
-
-      console.log('here3');
-      // Переход на страницу скалолаза
-      await page.goto(`${ALLCLIMB_URL}/${id}`, {
-        waitUntil: 'networkidle2',
-        timeout: 30000,
-      });
-
-      // Получение имени скалолаза 
-      const climberInfo = await page.$eval(
-        '.climber-info-block > p',
-        (el) => el.textContent?.trim() || '',
-      );
-      const { name, routesCount } = parseClimberInfo(climberInfo);
-
-      const existedUser = await this.climbersService.findOneByAllclimbId(Number(id));
-      // if (existedUser?.routesCount && routesCount === existedUser.routesCount) return {};
-      console.log('existedUser.routesCount>', existedUser?.routesCount)
-      console.log('routesCount>', routesCount)
-
-      // Функция для извлечения маршрутов
-      const getRoutes = async (): Promise<any[]> => {
-        return await page.$$eval('.news-preview', (elements) => {
-          return elements.map((el) => {
-            const titleEl = el.querySelector('.news-preview-title');
-            const allText = titleEl?.textContent?.trim() || '';
-            const gradeEl = el.querySelector('h4');
-            const nameEl = el.querySelector('b');
-            const dateEl = el.querySelector('.news-preview-date');
-
-            return {
-              isBoulder: allText.includes('Боулдер'),
-              isTopRope: allText.includes('Верхняя страховка.'),
-              grade: gradeEl?.textContent?.trim() || '',
-              name: nameEl?.textContent?.trim() || '',
-              date: dateEl?.textContent?.trim() || '',
-              text: allText,
-            };
-          });
-        });
-      };
-
-      let result = await getRoutes();
-      let previousLength = 0;
-
-      // Клик по кнопке "Еще" до тех пор, пока загружаются новые элементы
-      while (result.length > previousLength) {
-        previousLength = result.length;
-
-        const button = await page.$(BUTTON_MORE_SELECTOR);
-        if (!button) break;
-
-        try {
-          await button.click();
-          // Ожидание скрытия и появления контейнера (индикатор загрузки)
-          await page.waitForSelector('#wall', { visible: true, timeout: 5000 }).catch(() => {});
-          await page.waitForSelector('#wall', { visible: false, timeout: 10000 });
-          await this.delay(LOAD_DELAY);
-
-          result = await getRoutes();
-        } catch (error) {
-          console.warn('Ошибка при загрузке дополнительных маршрутов:', error);
-          break;
-        }
+    // Блокировка ресурсов для ускорения
+    await page.route('**/*', (route) => {
+      const resourceType = route.request().resourceType();
+      const blockedResources = ['image', 'stylesheet', 'font', 'media'];
+      if (blockedResources.includes(resourceType)) {
+        route.abort();
+      } else {
+        route.continue();
       }
+    });
 
-      console.log('routes:', result);
+    console.log('Navigating to climber page...');
+    // Переход на страницу скалолаза
+    await page.goto(`${ALLCLIMB_URL}/${id}`, {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
 
-      return {
-        name,
-        routesCount: Number(routesCount),
-        ...filterRoutes(result),
-      };
-    } catch (error) {
-      console.error('Ошибка при парсинге данных скалолаза:', error);
-      throw error;
-    } finally {
-      if (browser) {
-        await browser.close();
+    // Получение имени скалолаза 
+    const climberInfo = await page.textContent('.climber-info-block > p');
+    const trimmedInfo = climberInfo?.trim() || '';
+    const { name, routesCount } = parseClimberInfo(trimmedInfo);
+
+    const existedUser = await this.climbersService.findOneByAllclimbId(Number(id));
+    console.log('existedUser.routesCount>', existedUser?.routesCount);
+    console.log('routesCount>', routesCount);
+
+    // Функция для извлечения маршрутов
+    const getRoutes = async (): Promise<any[]> => {
+      return await page.$$eval('.news-preview', (elements) => {
+        return elements.map((el) => {
+          const titleEl = el.querySelector('.news-preview-title');
+          const allText = titleEl?.textContent?.trim() || '';
+          const gradeEl = el.querySelector('h4');
+          const nameEl = el.querySelector('b');
+          const dateEl = el.querySelector('.news-preview-date');
+
+          return {
+            isBoulder: allText.includes('Боулдер'),
+            isTopRope: allText.includes('Верхняя страховка.'),
+            grade: gradeEl?.textContent?.trim() || '',
+            name: nameEl?.textContent?.trim() || '',
+            date: dateEl?.textContent?.trim() || '',
+            text: allText,
+          };
+        });
+      });
+    };
+
+    let result = await getRoutes();
+    let previousLength = 0;
+    let attempts = 0;
+    const maxAttempts = 50; // Защита от бесконечного цикла
+
+    // Клик по кнопке "Еще" до тех пор, пока загружаются новые элементы
+    while (result.length > previousLength && attempts < maxAttempts) {
+      previousLength = result.length;
+      attempts++;
+
+      const button = await page.$(BUTTON_MORE_SELECTOR);
+      if (!button) break;
+
+      try {
+        // Playwright лучше обрабатывает клики с ожиданием
+        await button.click({ timeout: 5000 });
+        
+        // Ожидание загрузки новых элементов
+        await page.waitForLoadState('networkidle', { timeout: 10000 });
+        await this.delay(LOAD_DELAY);
+        
+        // Альтернативный способ - ждать появления новых элементов
+        try {
+          await page.waitForSelector(`${BUTTON_MORE_SELECTOR}:not(:disabled)`, { 
+            timeout: 5000,
+            state: 'attached'
+          });
+        } catch {
+          // Кнопка могла стать недоступной
+        }
+
+        result = await getRoutes();
+        
+        // Если количество элементов не изменилось, подождем немного
+        if (result.length === previousLength) {
+          await page.waitForTimeout(1000);
+          result = await getRoutes();
+        }
+        
+      } catch (error) {
+        console.warn('Ошибка при загрузке дополнительных маршрутов:', error);
+        break;
       }
     }
+
+    console.log(`Total routes loaded: ${result.length} after ${attempts} attempts`);
+
+    return {
+      name,
+      routesCount: Number(routesCount),
+      ...filterRoutes(result),
+    };
+  } catch (error) {
+    console.error('Ошибка при парсинге данных скалолаза:', error);
+    throw error;
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
+}
 }
