@@ -78,8 +78,39 @@ function checkDiskSpace() {
 export class ScrapingService {
   constructor(private climbersService: ClimbersService) {}
 
+  private checkDiskSpace() {
+    // Получаем информацию о памяти
+    const freeMB = os.freemem() / (1024 * 1024);
+    const totalMB = os.totalmem() / (1024 * 1024);
+    
+    // Логируем состояние памяти для отладки
+    console.log(`Память: ${freeMB.toFixed(0)}МБ свободно из ${totalMB.toFixed(0)}МБ`);
+    
+    // Бросаем ошибку, если памяти слишком мало (меньше 100МБ)
+    // Это предотвратит краш из-за нехватки памяти
+    if (freeMB < 100) {
+      throw new Error(`Недостаточно памяти: осталось всего ${freeMB.toFixed(0)}МБ`);
+    }
+    
+    return freeMB;
+  }
+
   private async delay(time: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
+  private async logMemoryUsage() {
+    // Check for memory issues
+    if (process.memoryUsage) {
+      const memory = process.memoryUsage();
+      const memoryUsage = {
+        heapUsed: Math.round(memory.heapUsed / 1024 / 1024) + 'MB',
+        heapTotal: Math.round(memory.heapTotal / 1024 / 1024) + 'MB',
+        rss: Math.round(memory.rss / 1024 / 1024) + 'MB'
+      };
+      console.log('memoryUsage: ', memoryUsage);
+    }
+    return memoryUsage;
   }
 
   private async diagnoseError(error, context) {
@@ -106,12 +137,7 @@ export class ScrapingService {
 
     // Check 3: Check for memory issues
     if (process.memoryUsage) {
-      const memory = process.memoryUsage();
-      diagnostics.checks.memoryUsage = {
-        heapUsed: Math.round(memory.heapUsed / 1024 / 1024) + 'MB',
-        heapTotal: Math.round(memory.heapTotal / 1024 / 1024) + 'MB',
-        rss: Math.round(memory.rss / 1024 / 1024) + 'MB'
-      };
+      diagnostics.checks.memoryUsage = this.logMemoryUsage;
     }
 
     // Check 4: Check for too many pages
@@ -128,8 +154,8 @@ export class ScrapingService {
   try {
 
     // Проверяем доступное место перед началом работы
-    checkDiskSpace();
-    console.log('Memory usage:', memoryUsage());
+    this.checkDiskSpace();
+    this.logMemoryUsage();
   
     // Очищаем временные файлы от предыдущих запусков
     await cleanupTempDir();
@@ -161,19 +187,19 @@ export class ScrapingService {
         viewport: { width: 1280, height: 800 },
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
       });
-      console.log('Memory usage2:', memoryUsage());
+      
       const page = await context.newPage();
-
+      this.logMemoryUsage();
       // Блокировка ресурсов для ускорения
-      // await page.route('**/*', (route) => {
-      //   const resourceType = route.request().resourceType();
-      //   const blockedResources = ['image', 'stylesheet', 'font', 'media'];
-      //   if (blockedResources.includes(resourceType)) {
-      //     route.abort();
-      //   } else {
-      //     route.continue();
-      //   }
-      // });
+      await page.route('**/*', (route) => {
+        const resourceType = route.request().resourceType();
+        const blockedResources = ['image', 'stylesheet', 'font', 'media'];
+        if (blockedResources.includes(resourceType)) {
+          route.abort();
+        } else {
+          route.continue();
+        }
+      });
 
       console.log('Navigating to climber page...');
       // Переход на страницу скалолаза
