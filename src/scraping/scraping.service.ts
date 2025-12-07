@@ -82,6 +82,47 @@ export class ScrapingService {
     return new Promise((resolve) => setTimeout(resolve, time));
   }
 
+  private async diagnoseError(error, context) {
+    const diagnostics = {
+      timestamp: new Date().toISOString(),
+      errorMessage: error.message,
+      checks: {
+        browserConnected: undefined,
+        contextClosed: undefined,
+        memoryUsage: undefined,
+        pagesCount: undefined,
+      }
+    };
+
+    // Check 1: Is browser connected?
+    if (context.browser) {
+      diagnostics.checks.browserConnected = context.browser().isConnected();
+    }
+
+    // Check 2: Is context closed?
+    if (context.isClosed) {
+      diagnostics.checks.contextClosed = await context.isClosed();
+    }
+
+    // Check 3: Check for memory issues
+    if (process.memoryUsage) {
+      const memory = process.memoryUsage();
+      diagnostics.checks.memoryUsage = {
+        heapUsed: Math.round(memory.heapUsed / 1024 / 1024) + 'MB',
+        heapTotal: Math.round(memory.heapTotal / 1024 / 1024) + 'MB',
+        rss: Math.round(memory.rss / 1024 / 1024) + 'MB'
+      };
+    }
+
+    // Check 4: Check for too many pages
+    if (context.pages) {
+      diagnostics.checks.pagesCount = context.pages().length;
+    }
+
+    console.error('Diagnostics:', JSON.stringify(diagnostics, null, 2));
+    return diagnostics;
+  }
+
   async getClimberById(id: string): Promise<IClimberParse> {
   let browser;
   try {
@@ -108,9 +149,10 @@ export class ScrapingService {
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--single-process', // экономит память
           '--disable-web-security',
           '--disable-features=IsolateOrigins,site-per-process',
-          '--disable-webauthn',
         ],
       });
 
@@ -219,7 +261,7 @@ export class ScrapingService {
           }
           
         } catch (error) {
-          console.warn('Ошибка при загрузке дополнительных маршрутов:', error);
+          console.warn('Ошибка при загрузке дополнительных маршрутов:', this.diagnoseError(error, context));
           break;
         }
       }
