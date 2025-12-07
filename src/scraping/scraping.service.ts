@@ -52,32 +52,15 @@ async function cleanupTempDir() {
   }
 }
 
-/**
- * Проверяет доступное дисковое пространство
- * @returns {number} Количество свободных МБ
- * @throws {Error} Если памяти меньше 100МБ
- */
-function checkDiskSpace() {
-  // Получаем информацию о памяти
-  const freeMB = os.freemem() / (1024 * 1024);
-  const totalMB = os.totalmem() / (1024 * 1024);
-  
-  // Логируем состояние памяти для отладки
-  console.log(`Память: ${freeMB.toFixed(0)}МБ свободно из ${totalMB.toFixed(0)}МБ`);
-  
-  // Бросаем ошибку, если памяти слишком мало (меньше 100МБ)
-  // Это предотвратит краш из-за нехватки памяти
-  if (freeMB < 100) {
-    throw new Error(`Недостаточно памяти: осталось всего ${freeMB.toFixed(0)}МБ`);
-  }
-  
-  return freeMB;
-}
-
 @Injectable()
 export class ScrapingService {
   constructor(private climbersService: ClimbersService) {}
 
+  /**
+   * Проверяет доступное дисковое пространство
+   * @returns {number} Количество свободных МБ
+   * @throws {Error} Если памяти меньше 100МБ
+   */
   private checkDiskSpace() {
     // Получаем информацию о памяти
     const freeMB = os.freemem() / (1024 * 1024);
