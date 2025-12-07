@@ -28,24 +28,25 @@ async function cleanupTempDir() {
   try {
     // Читаем все файлы в temp-каталоге
     const files = await fs.promises.readdir(tempDir);
-    
+    const removedFiles = [];
+
     // Проходим по всем файлам
     for (const file of files) {
       // Фильтруем только временные файлы браузера (Chromium)
       // Важно: не удаляем системные файлы, только браузерные
       if (file.includes('core.chromium')) {
         const filePath = path.join(tempDir, file);
-        
         try {
           // Удаляем файл
-          // await fs.promises.unlink(filePath);
-          console.log(`Удален временный файл: ${filePath}`);
+          await fs.promises.unlink(filePath);
+          removedFiles.push(filePath);
         } catch (e) {
           // Логируем, но не прерываем выполнение при ошибке удаления
           console.warn(`Не удалось удалить ${filePath}:`, e.message);
         }
       }
     }
+    console.log(`Удалены временные файлы: ${removedFiles.join(', ')}`);
   } catch (error) {
     // Если не можем прочитать каталог, логируем ошибку
     console.error('Ошибка при очистке временного каталога:', error);
@@ -133,75 +134,75 @@ export class ScrapingService {
   }
 
   async getClimberById(id: string): Promise<IClimberParse> {
-  let browser;
-  try {
+    let browser;
+    try {
 
-    // Проверяем доступное место перед началом работы
-    this.checkDiskSpace();
-    this.logMemoryUsage();
-  
-    // Очищаем временные файлы от предыдущих запусков
-    await cleanupTempDir();
-
-    const executablePath = process.env.VERCEL 
-      ? await chromium.executablePath()
-      : playwright.chromium.executablePath();
+      // Проверяем доступное место перед началом работы
+      this.checkDiskSpace();
+      this.logMemoryUsage();
     
-    console.log(`Запускаем Playwright браузер (${executablePath})...`);
-    
-    browser = await playwright.chromium.launch({
-      executablePath,
-      headless: true, // Используйте false для отладки
-      args: [
-        '--no-sandbox',                    // Отключает sandbox-защиту Chromium. Полезно в изолированных средах (например, Docker), где sandbox может вызывать проблемы. ⚠️ Опасно в ненадёжных окружениях.
-        '--disable-setuid-sandbox',        // Отключает setuid sandbox, который иногда несовместим с контейнерами.
-        '--disable-dev-shm-usage',         // Заставляет использовать временные файлы вместо /dev/shm, что полезно при ограниченной памяти в Docker (по умолчанию /dev/shm маленький).
-        '--disable-gpu',                   // Отключаеsт GPU-ускорение. Уменьшает потребление памяти и предотвращает ошибки в headless-режиме (где нет графического интерфейса).
-        '--single-process',                // Запускает весь браузер в одном процессе. Экономит память, но может снизить стабильность (падение одного таба — падение всего браузера).
-        '--disable-web-security',          // Отключает политику одинакового происхождения (same-origin policy). Полезно для тестов, но ⚠️ делает браузер уязвимым к XSS и другим атакам.
-        '--disable-features=IsolateOrigins,site-per-process', // Отключает изоляцию происхождений и режим "по сайту — отдельный процесс", что может помочь обойти некоторые CORS-ограничения.
-      ],
-    });
+      // Очищаем временные файлы от предыдущих запусков
+      await cleanupTempDir();
 
-    console.log('Браузер запущен, создание context и page...');
-    const context = await browser.newContext({
-      viewport: { width: 1280, height: 800 },
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    });
-    
-    const page = await context.newPage();
-    this.logMemoryUsage();
+      const executablePath = process.env.VERCEL 
+        ? await chromium.executablePath()
+        : playwright.chromium.executablePath();
+      
+      console.log(`Запускаем Playwright браузер (${executablePath})...`);
+      
+      browser = await playwright.chromium.launch({
+        executablePath,
+        headless: true, // Используйте false для отладки
+        args: [
+          '--no-sandbox',                    // Отключает sandbox-защиту Chromium. Полезно в изолированных средах (например, Docker), где sandbox может вызывать проблемы. ⚠️ Опасно в ненадёжных окружениях.
+          '--disable-setuid-sandbox',        // Отключает setuid sandbox, который иногда несовместим с контейнерами.
+          '--disable-dev-shm-usage',         // Заставляет использовать временные файлы вместо /dev/shm, что полезно при ограниченной памяти в Docker (по умолчанию /dev/shm маленький).
+          '--disable-gpu',                   // Отключаеsт GPU-ускорение. Уменьшает потребление памяти и предотвращает ошибки в headless-режиме (где нет графического интерфейса).
+          '--single-process',                // Запускает весь браузер в одном процессе. Экономит память, но может снизить стабильность (падение одного таба — падение всего браузера).
+          '--disable-web-security',          // Отключает политику одинакового происхождения (same-origin policy). Полезно для тестов, но ⚠️ делает браузер уязвимым к XSS и другим атакам.
+          '--disable-features=IsolateOrigins,site-per-process', // Отключает изоляцию происхождений и режим "по сайту — отдельный процесс", что может помочь обойти некоторые CORS-ограничения.
+        ],
+      });
 
-    // Блокировка ресурсов для ускорения
-    await page.route('**/*', (route) => {
-      const resourceType = route.request().resourceType();
-      const blockedResources = ['image', 'stylesheet', 'font', 'media'];
-      if (blockedResources.includes(resourceType)) {
-        route.abort();
-      } else {
-        route.continue();
-      }
-    });
+      console.log('Браузер запущен, создание context и page...');
+      const context = await browser.newContext({
+        viewport: { width: 1280, height: 800 },
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      });
+      
+      const page = await context.newPage();
+      this.logMemoryUsage();
 
-    console.log('Переход на страницу скалолаза...');
-    // Переход на страницу скалолаза
-    await page.goto(`${ALLCLIMB_URL}/${id}`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 30000,
-    });
+      // Блокировка ресурсов для ускорения
+      await page.route('**/*', (route) => {
+        const resourceType = route.request().resourceType();
+        const blockedResources = ['image', 'stylesheet', 'font', 'media'];
+        if (blockedResources.includes(resourceType)) {
+          route.abort();
+        } else {
+          route.continue();
+        }
+      });
 
-    // Получение имени скалолаза 
-    const climberInfo = await page.textContent('.climber-info-block > p');
-    const trimmedInfo = climberInfo?.trim() || '';
-    const { name, routesCount } = parseClimberInfo(trimmedInfo);
+      console.log('Переход на страницу скалолаза...');
+      // Переход на страницу скалолаза
+      await page.goto(`${ALLCLIMB_URL}/${id}`, {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000,
+      });
 
-    const existedUser = await this.climbersService.findOneByAllclimbId(Number(id));
-    console.log('Скалолаз: ', {
-      allClimbId: id,
-      name,
-      routesCount,
-      prevRoutesCount: existedUser?.routesCount,
-    });
+      // Получение имени скалолаза 
+      const climberInfo = await page.textContent('.climber-info-block > p');
+      const trimmedInfo = climberInfo?.trim() || '';
+      const { name, routesCount } = parseClimberInfo(trimmedInfo);
+
+      const existedUser = await this.climbersService.findOneByAllclimbId(Number(id));
+      console.log('Скалолаз: ', {
+        allClimbId: id,
+        name,
+        routesCount,
+        prevRoutesCount: existedUser?.routesCount,
+      });
 
       // Функция для извлечения маршрутов
       const getRoutes = async (): Promise<any[]> => {
