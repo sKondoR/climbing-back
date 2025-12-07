@@ -201,6 +201,9 @@ export class ScrapingService {
         routesCount,
         prevRoutesCount: existedUser?.routesCount,
       });
+      if (existedUser && existedUser?.routesCount === routesCount) {
+        return {};
+      }
 
       // Функция для извлечения маршрутов
       const getRoutes = async (): Promise<any[]> => {
@@ -277,7 +280,7 @@ export class ScrapingService {
         }
       }
 
-      console.log(`Пролазов загруженно: ${result.length} после ${attempts} попыток`);
+      console.log(`Пролазов загруженно: ${result.length} после ${attempts} подгрузок`);
 
       return {
         name,
