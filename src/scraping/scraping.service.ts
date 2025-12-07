@@ -1,61 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import * as playwright from 'playwright-core';
-const chromium = require('@sparticuz/chromium');
 import { ClimbersService } from '../climbers/climbers.service';
 import { IClimberParse } from './scraping.interfaces';
 import {
   ALLCLIMB_URL,
-  // LOCAL_CHROME_EXECUTABLE,
   BUTTON_MORE_SELECTOR,
 } from './scraping.constants';
 import { filterRoutes, parseClimberInfo } from './scraping.utils';
+
+const chromium = require('@sparticuz/chromium');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
-import { memoryUsage } from 'process';
-
 
 const LOAD_DELAY = 2000;
-
-/**
- * Очищает временные файлы браузера из системного temp-каталога
- * Это критически важно для serverless-сред, где дисковое пространство ограничено
- */
-async function cleanupTempDir() {
-  // Получаем системный временный каталог (в Lambda это /tmp)
-  const tempDir = os.tmpdir();
-  
-  try {
-    // Читаем все файлы в temp-каталоге
-    const files = await fs.promises.readdir(tempDir);
-    const removedFiles = [];
-
-    // Проходим по всем файлам
-    for (const file of files) {
-      // Фильтруем только временные файлы браузера (Chromium)
-      // Важно: не удаляем системные файлы, только браузерные
-      if (file.includes('core.chromium')) {
-        const filePath = path.join(tempDir, file);
-        try {
-          // Удаляем файл
-          await fs.promises.unlink(filePath);
-          removedFiles.push(filePath);
-        } catch (e) {
-          // Логируем, но не прерываем выполнение при ошибке удаления
-          console.warn(`Не удалось удалить ${filePath}:`, e.message);
-        }
-      }
-    }
-    console.log(`Удалены временные файлы: ${removedFiles.join(', ')}`);
-  } catch (error) {
-    // Если не можем прочитать каталог, логируем ошибку
-    console.error('Ошибка при очистке временного каталога:', error);
-  }
-}
 
 @Injectable()
 export class ScrapingService {
   constructor(private climbersService: ClimbersService) {}
+
+  private async delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Очищает временные файлы Chromium из /tmp (важно для serverless)
+   */
+  private async cleanupTempDir() {
+    // Получаем системный временный каталог (в Lambda это /tmp)
+    const tempDir = os.tmpdir();
+    
+    try {
+      // Читаем все файлы в temp-каталоге
+      const files = await fs.promises.readdir(tempDir);
+      const removedFiles = [];
+
+      // Проходим по всем файлам
+      for (const file of files) {
+        // Фильтруем только временные файлы браузера (Chromium)
+        // Важно: не удаляем системные файлы, только браузерные
+        if (file.includes('core.chromium')) {
+          const filePath = path.join(tempDir, file);
+          try {
+            // Удаляем файл
+            await fs.promises.unlink(filePath);
+            removedFiles.push(filePath);
+          } catch (e) {
+            // Логируем, но не прерываем выполнение при ошибке удаления
+            console.warn(`Не удалось удалить ${filePath}:`, e.message);
+          }
+        }
+      }
+      console.log(`Удалены временные файлы: ${removedFiles.join(', ')}`);
+    } catch (error) {
+      // Если не можем прочитать каталог, логируем ошибку
+      console.error('Ошибка при очистке временного каталога:', error);
+    }
+  }
 
   /**
    * Проверяет доступное дисковое пространство
@@ -70,8 +71,7 @@ export class ScrapingService {
     // Логируем состояние памяти для отладки
     console.log(`Память: ${freeMB.toFixed(0)}МБ свободно из ${totalMB.toFixed(0)}МБ`);
     
-    // Бросаем ошибку, если памяти слишком мало (меньше 100МБ)
-    // Это предотвратит краш из-за нехватки памяти
+    // Бросаем ошибку, если памяти слишком мало (меньше 100МБ). Это предотвратит краш из-за нехватки памяти
     if (freeMB < 100) {
       throw new Error(`Недостаточно памяти: осталось всего ${freeMB.toFixed(0)}МБ`);
     }
@@ -79,15 +79,12 @@ export class ScrapingService {
     return freeMB;
   }
 
-  private async delay(time: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, time));
-  }
-
-  private async logMemoryUsage() {
+  private logMemoryUsage() {
+    let memoryUsage;
     // Check for memory issues
     if (process.memoryUsage) {
       const memory = process.memoryUsage();
-      const memoryUsage = {
+      memoryUsage = {
         heapUsed: Math.round(memory.heapUsed / 1024 / 1024) + 'MB',
         heapTotal: Math.round(memory.heapTotal / 1024 / 1024) + 'MB',
         rss: Math.round(memory.rss / 1024 / 1024) + 'MB'
@@ -135,6 +132,7 @@ export class ScrapingService {
 
   async getClimberById(id: string): Promise<IClimberParse> {
     let browser;
+    let context;
     try {
 
       // Проверяем доступное место перед началом работы
@@ -142,7 +140,7 @@ export class ScrapingService {
       this.logMemoryUsage();
     
       // Очищаем временные файлы от предыдущих запусков
-      await cleanupTempDir();
+      await this.cleanupTempDir();
 
       const executablePath = process.env.VERCEL 
         ? await chromium.executablePath()
@@ -165,7 +163,7 @@ export class ScrapingService {
       });
 
       console.log('Браузер запущен, создание context и page...');
-      const context = await browser.newContext({
+      context = await browser.newContext({
         viewport: { width: 1280, height: 800 },
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
       });
@@ -290,8 +288,11 @@ export class ScrapingService {
       console.error('Ошибка при парсинге данных скалолаза:', error);
       throw error;
     } finally {
+      if (context) {
+        await context.close().catch(console.error);
+      }
       if (browser) {
-        await browser.close();
+        await browser.close().catch(console.error);
       }
     }
   }
