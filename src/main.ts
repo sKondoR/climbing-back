@@ -19,10 +19,7 @@ async function bootstrap() {
     }});
   }
 
-  const allowedOrigins = [
-    isProd ? process.env.APP_HOST : process.env.APP_LOCAL,
-    `${isProd ? process.env.APP_HOST : process.env.APP_LOCAL}/`
-  ];
+  const allowedOrigins = isProd ? process.env.APP_HOST : process.env.APP_LOCAL;
 
   const options = {
     origin: allowedOrigins,
