@@ -129,7 +129,7 @@ export class AuthService {
     const params = new URLSearchParams({
       fields: 'photo_400,has_mobile,home_town,contacts,mobile_phone',
       access_token: token,
-      v: '5.120',
+      v: '5.245',
     });
 
     try {
