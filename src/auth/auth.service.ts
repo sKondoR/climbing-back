@@ -75,6 +75,7 @@ export class AuthService {
    * @returns объект с id_token
    */
   async getVkToken(auth: AuthVKEntity): Promise<TokenResponse> {
+    console.log('>>>> ', process.env.NODE_ENV, process.env);
     const queryParams = new URLSearchParams({
       grant_type: 'authorization_code',
       redirect_uri: this.redirectUri,
