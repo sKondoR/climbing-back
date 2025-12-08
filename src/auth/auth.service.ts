@@ -19,7 +19,7 @@ interface TokenResponse {
 export class AuthService {
   private readonly vkOauthUrl = 'https://id.vk.com/oauth2/auth';
   private readonly vkApiUrl = 'https://api.vk.com/method/users.get';
-  private readonly redirectUri = `${process.env.NODE_ENV === 'dev' ? process.env.APP_LOCAL : process.env.APP_HOST}/signin`;
+  private readonly redirectUri = `${process.env.NODE_ENV !== 'dev' ? process.env.APP_HOST : process.env.APP_LOCAL}/signin`;
   private readonly vkClientId = process.env.VK_APP_CLIENT_ID;
 
   constructor(
@@ -75,7 +75,6 @@ export class AuthService {
    * @returns объект с id_token
    */
   async getVkToken(auth: AuthVKEntity): Promise<TokenResponse> {
-    console.log('>>>> ', process.env.NODE_ENV, process.env);
     const queryParams = new URLSearchParams({
       grant_type: 'authorization_code',
       redirect_uri: this.redirectUri,

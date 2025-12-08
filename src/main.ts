@@ -7,21 +7,21 @@ import { config } from 'dotenv';
 config();
 
 async function bootstrap() {
-  const isDev = process.env.NODE_ENV === 'dev';
+  const isProd = process.env.NODE_ENV !== 'dev';
 
   let app;
-  if(isDev) {
+  if(isProd) {
+    app = await NestFactory.create(AppModule);
+  } else {
     app = await NestFactory.create(AppModule, { httpsOptions: {
       cert: fs.readFileSync('localhost+2.pem'),
       key: fs.readFileSync('localhost+2-key.pem'),
     }});
-  } else {
-    app = await NestFactory.create(AppModule);
   }
 
   const allowedOrigins = [
-    isDev ? process.env.APP_LOCAL : process.env.APP_HOST,
-    `${isDev ? process.env.APP_LOCAL : process.env.APP_HOST}/`
+    isProd ? process.env.APP_HOST : process.env.APP_LOCAL,
+    `${isProd ? process.env.APP_HOST : process.env.APP_LOCAL}/`
   ];
 
   const options = {
