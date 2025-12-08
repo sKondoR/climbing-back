@@ -20,7 +20,7 @@ async function bootstrap() {
   }
 
   const options = {
-    origin: isDev ? 'https://localhost' : 'https://climbing-web.vercel.app',
+    origin: isDev ? process.env.APP_LOCAL : process.env.APP_HOST,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   };

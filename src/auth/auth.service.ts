@@ -19,7 +19,7 @@ interface TokenResponse {
 export class AuthService {
   private readonly vkOauthUrl = 'https://id.vk.com/oauth2/auth';
   private readonly vkApiUrl = 'https://api.vk.com/method/users.get';
-  private readonly redirectUri = process.env.NODE_ENV !== 'production' ? `https://localhost/signin` : '';
+  private readonly redirectUri = `${process.env.NODE_ENV !== 'production' ? process.env.APP_LOCAL : process.env.APP_HOST}/signin`;
   private readonly vkClientId = process.env.VK_APP_CLIENT_ID;
 
   constructor(

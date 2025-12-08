@@ -12,8 +12,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           host: 'localhost',
           url: configService.get('POSTGRES_URL'),
           directUrl: configService.get('POSTGRES_URL_NON_POOLING'),
-          // database: configService.get('POSTGRES_HOST'),
-          // port: configService.get('POSTGRES_PORT'),
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
