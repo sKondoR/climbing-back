@@ -23,6 +23,7 @@ export class ClimbersController {
 
   @Get()
   findAll() {
+    console.log('>>> ', process.env.APP_LOCAL, process.env.APP_HOST)
     return this.climbersService.findAll();
   }
 

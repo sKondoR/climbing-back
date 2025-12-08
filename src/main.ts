@@ -23,10 +23,10 @@ async function bootstrap() {
     isDev ? process.env.APP_LOCAL : process.env.APP_HOST,
     `${isDev ? process.env.APP_LOCAL : process.env.APP_HOST}/`
   ];
-origin: isDev ? 'https://localhost' : 'https://climbing-web.vercel.app',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+
+  console.log('>>> ', process.env.APP_LOCAL, process.env.APP_HOST)
   const options = {
-    origin: allowedOrigins,
+    origin: isDev ? 'https://localhost' : 'https://climbing-web.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   };
