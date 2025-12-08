@@ -21,7 +21,7 @@ async function bootstrap() {
 
   console.log('>>> ', process.env.APP_LOCAL, process.env.APP_HOST)
   const options = {
-    origin: isDev ? process.env.APP_LOCAL : '',
+    origin: isDev ? process.env.APP_LOCAL : process.env.APP_HOST,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   };
