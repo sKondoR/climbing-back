@@ -19,6 +19,7 @@ async function bootstrap() {
     app = await NestFactory.create(AppModule);
   }
 
+  console.log('>>> ', process.env.APP_LOCAL, process.env.APP_HOST)
   const options = {
     origin: isDev ? process.env.APP_LOCAL : '',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
