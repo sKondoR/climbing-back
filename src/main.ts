@@ -20,7 +20,7 @@ async function bootstrap() {
   }
 
   const options = {
-    origin: isDev ? process.env.APP_LOCAL : process.env.APP_HOST,
+    origin: isDev ? process.env.APP_LOCAL : '',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   };
