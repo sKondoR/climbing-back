@@ -198,10 +198,12 @@ export class ScrapingService {
       console.log('Скалолаз: ', {
         allClimbId: id,
         name,
+        leadsCount: existedUser?.leads.length,
+        bouldersCount: existedUser?.boulders.length,
         routesCount,
         prevRoutesCount: existedUser?.routesCount,
       });
-      if (existedUser && existedUser?.routesCount === routesCount) {
+      if (existedUser && existedUser.routesCount === routesCount && (existedUser.leads.length + existedUser.boulders.length >= routesCount)) {
         return {};
       }
 

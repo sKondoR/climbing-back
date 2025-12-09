@@ -52,7 +52,6 @@ export class ClimbersService {
     user.boulders = updateClimberDto.boulders;
     user.routesCount = updateClimberDto.routesCount;
     user.updatedAt = getNow();
-    console.log('>>> update', id, user);
     await this.climbersRepository.update({ id }, user);
     return user;
   }

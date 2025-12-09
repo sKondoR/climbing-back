@@ -6,10 +6,6 @@ export const parseClimberInfo = (text) => {
   };
 };
 
-const findSameRoute = (arr, route) => {
-  return arr.some((item) => item.name === route.name && item.grade === route.grade && item.text === route.text);
-}
-
 export const filterRoutes = (routes) => {
   const leadsMap = new Map();
   const bouldersMap = new Map();
