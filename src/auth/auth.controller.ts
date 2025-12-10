@@ -48,7 +48,7 @@ export class AuthController {
       const vkUser = data.response[0];
       const existedUser = vkUser.id && await this.userService.findByVkId(vkUser.id);
 
-      if (existedUser.avatar_url) {
+      if (existedUser?.avatar_url) {
         return this.authService.authenticate(existedUser);
       }
 
@@ -59,9 +59,7 @@ export class AuthController {
         avatar_url: vkUser.photo_400,
         password: null,
         grant: IGrant.USER,
-        team: TEAM,
-        friends: FRIENDS,
-        pro: [],
+        groups: [],
       };
 
       // "id": 26807,

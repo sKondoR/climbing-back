@@ -31,9 +31,7 @@ export class UsersService {
     climber.name = createUserDto.name;
     climber.grant = createUserDto.grant;
     climber.allClimbId = createUserDto.allClimbId;
-    climber.team = createUserDto.team;
-    climber.friends = createUserDto.friends;
-    climber.pro = createUserDto.pro;
+    climber.groups = createUserDto.groups;
     return await this.usersRepository.save(climber);
   }
 

@@ -10,12 +10,16 @@ export interface IUser {
   avatar_url: string | null;
   grant: IGrant;
   password: string | null;
-  team: IAllClimber[] | null;
-  friends: IAllClimber[] | null;
-  pro: IAllClimber[] | null;
+  groups: IClimberGroup[] | null;
 }
 
 export interface IAllClimber {
   allClimbId: number | null;
   name: string | null;
+}
+
+export interface IClimberGroup {
+    label: string;
+    items: IAllClimber[];
+    offset: number;
 }

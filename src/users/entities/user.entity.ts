@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { IAllClimber, IGrant } from '../users.interfaces';
+import { IClimberGroup, IGrant } from '../users.interfaces';
 
 @Entity()
 export class UserEntity {
@@ -38,19 +38,5 @@ export class UserEntity {
     array: false,
     default: () => "'[]'",
   })
-  team: IAllClimber[];
-
-  @Column({
-    type: 'jsonb',
-    array: false,
-    default: () => "'[]'",
-  })
-  friends: IAllClimber[];
-
-  @Column({
-    type: 'jsonb',
-    array: false,
-    default: () => "'[]'",
-  })
-  pro: IAllClimber[];
+  groups: IClimberGroup[];
 }
