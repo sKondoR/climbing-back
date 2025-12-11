@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as playwright from 'playwright-core';
 import { ClimbersService } from '../climbers/climbers.service';
-import { IClimberParse } from './scraping.interfaces';
+import { IClimberParse, IErrorParse } from './scraping.interfaces';
 import {
   ALLCLIMB_URL,
   BUTTON_MORE_SELECTOR,
@@ -130,7 +130,7 @@ export class ScrapingService {
     return diagnostics;
   }
 
-  async getClimberById(id: string): Promise<IClimberParse> {
+  async getClimberById(id: string): Promise<IClimberParse | IErrorParse> {
     let browser;
     let context;
     try {
@@ -192,7 +192,7 @@ export class ScrapingService {
       // Получение имени скалолаза 
       const climberInfo = await page.textContent('.climber-info-block > p');
       const trimmedInfo = climberInfo?.trim() || '';
-      const { name, routesCount } = parseClimberInfo(trimmedInfo);
+      const { name, routesCount, scores } = parseClimberInfo(trimmedInfo);
 
       const existedUser = await this.climbersService.findOneByAllclimbId(Number(id));
       console.log('Скалолаз: ', {
@@ -201,15 +201,19 @@ export class ScrapingService {
         leadsCount: existedUser?.leads.length,
         bouldersCount: existedUser?.boulders.length,
         routesCount,
+        scores,
         prevRoutesCount: existedUser?.routesCount,
       });
-      if (existedUser && existedUser.routesCount === routesCount && (existedUser.leads.length + existedUser.boulders.length >= routesCount)) {
-        return {};
-      }
+      // if (existedUser && existedUser.routesCount === routesCount && (existedUser.leads.length + existedUser.boulders.length >= routesCount)) {
+      //   return {
+      //     message: `Allclimb ${id} не требует обновления`,
+      //   };
+      // }
 
       // Функция для извлечения маршрутов
       const getRoutes = async (): Promise<any[]> => {
         return await page.$$eval('.news-preview', (elements) => {
+          console.log('getRoutes2 ',);
           return elements.map((el) => {
             const titleEl = el.querySelector('.news-preview-title');
             const allText = titleEl?.textContent?.trim() || '';
@@ -283,15 +287,18 @@ export class ScrapingService {
       }
 
       console.log(`Пролазов загруженно: ${result.length} после ${attempts} подгрузок`);
-
+      const { leads, boulders } = filterRoutes(result);
       return {
         name,
         routesCount: Number(routesCount),
-        ...filterRoutes(result),
+        scores,
+        leads,
+        boulders,
       };
     } catch (error) {
-      console.error('Ошибка при парсинге данных скалолаза:', error);
-      throw error;
+      throw new BadRequestException(
+        'Error on parsing data from Allclimb: ' + error,
+      );
     } finally {
       if (context) {
         await context.close().catch(console.error);

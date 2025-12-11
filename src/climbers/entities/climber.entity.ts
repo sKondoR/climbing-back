@@ -30,6 +30,9 @@ export class ClimberEntity {
   @Column({ type: 'int', default: 0 })
   routesCount: number;
 
+  @Column({ type: 'int', default: 0 })
+  scores: number;
+
   @Column()
   updatedAt: string;
 }

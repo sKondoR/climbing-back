@@ -7,4 +7,5 @@ export class CreateClimberDto {
   leads: IRoute[] | null;
   boulders: IRoute[] | null;
   routesCount: number | null;
+  scores: number | null;
 }

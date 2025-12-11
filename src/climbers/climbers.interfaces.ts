@@ -4,6 +4,8 @@ export interface IRoute {
   grade: string;
   name: string;
   date: string;
+  region?: string;
+  text: string;
 }
 export type IRoutes = Array<IRoute>;
 
@@ -14,4 +16,6 @@ export interface IClimber {
   leads: IRoute[] | null;
   boulders: IRoute[] | null;
   updatedAt: string | null;
+  routesCount: number | null;
+  scores: number | null;
 }

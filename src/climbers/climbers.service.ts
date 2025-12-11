@@ -51,6 +51,7 @@ export class ClimbersService {
     user.leads = updateClimberDto.leads;
     user.boulders = updateClimberDto.boulders;
     user.routesCount = updateClimberDto.routesCount;
+    user.scores = updateClimberDto.scores;
     user.updatedAt = getNow();
     await this.climbersRepository.update({ id }, user);
     return user;

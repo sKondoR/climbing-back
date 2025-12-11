@@ -1,8 +1,13 @@
 import { IRoute } from '../climbers/climbers.interfaces';
 
 export interface IClimberParse {
-  name?: string | null;
-  leades?: IRoute[] | null;
-  boulders?: IRoute[] | null;
-  routesCount?: number | null;
+  name: string;
+  leads: IRoute[];
+  boulders: IRoute[];
+  routesCount: number;
+  scores: number;
+}
+
+export interface IErrorParse {
+  message: string;
 }
