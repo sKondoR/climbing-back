@@ -56,7 +56,8 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    await this.usersRepository.update({ id }, updateUserDto);
+    user.groups = updateUserDto.groups;
+    await this.usersRepository.update({ id }, user);
     return user;
   }
 
