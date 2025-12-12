@@ -10,6 +10,7 @@ import { DatabaseModule } from './database/database.module';
 import { TeamModule } from './team/team.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { LeadTrainingModule } from './lead-training/lead-training.module';
+import { HealthyModule } from './healthy/healthy.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { LeadTrainingModule } from './lead-training/lead-training.module';
     TeamModule,
     ScheduleModule,
     LeadTrainingModule,
+    HealthyModule,
   ],
   controllers: [],
   providers: [JwtService],
