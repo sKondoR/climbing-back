@@ -16,7 +16,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
           logging: true,
-          synchronize: true, // Be cautious about using synchronize in production
+          synchronize: false, // Be cautious about using synchronize in production
         };
       },
       // useFactory: (config: ConfigService) => config.get('database'),
