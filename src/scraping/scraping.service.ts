@@ -5,10 +5,6 @@ import { IClimberParse, IErrorParse } from './scraping.interfaces';
 import {
   ALLCLIMB_URL,
   BUTTON_MORE_SELECTOR,
-  PARSING_WORDS,
-  ROUTE_DATE_SELECTOR,
-  ROUTES_SELECTOR,
-  TITLE_SELECTOR,
 } from './scraping.constants';
 import { filterRoutes, parseClimberInfo } from './scraping.utils';
 
@@ -216,17 +212,17 @@ export class ScrapingService {
 
       // Функция для извлечения маршрутов
       const getRoutes = async (): Promise<any[]> => {
-        return await page.$$eval(ROUTES_SELECTOR, (elements) => {
+        return await page.$$eval('.news-preview', (elements) => {
           return elements.map((el) => {
-            const titleEl = el.querySelector(TITLE_SELECTOR);
+            const titleEl = el.querySelector('.news-preview-title');
             const allText = titleEl?.textContent?.trim() || '';
             const gradeEl = el.querySelector('h4');
             const nameEl = el.querySelector('b');
-            const dateEl = el.querySelector(ROUTE_DATE_SELECTOR);
+            const dateEl = el.querySelector('.news-preview-date');
 
             return {
-              isBoulder: allText.includes(PARSING_WORDS.BOLDER_WORD),
-              isTopRope: allText.includes(PARSING_WORDS.TOP_ROPE),
+              isBoulder: allText.includes('Боулдер'),
+              isTopRope: allText.includes('Верхняя страховка.'),
               grade: gradeEl?.textContent?.trim() || '',
               name: nameEl?.textContent?.trim() || '',
               date: dateEl?.textContent?.trim() || '',
