@@ -8,7 +8,7 @@ export const TEAM = [
     { allClimbId: null , year: '2012', photoName: 'vaevd', name: 'Ваня Евдокимов', text: '' },
     { allClimbId: 47913, year: '2011', photoName: 'glere', name: 'Глеб Еремин', isCityTeam: true, text: '' },
     { allClimbId: null , year: '2010', photoName: 'efrit', name: 'Ефимова Рита', isCityTeam: true, text: '' },
-    { allClimbId: null , year: '2012', photoName: 'stzur', name: 'Стася Зырянова', isCityTeam: true, text: '' },
+    { allClimbId: 50620, year: '2012', photoName: 'stzur', name: 'Стася Зырянова', isCityTeam: true, text: '' },
     { allClimbId: null , year: '2013', photoName: 'soiva', name: 'Соня Иваненко', text: '' },
     { allClimbId: 35292, year: '2013', photoName: 'vikon', name: 'Витя Кондрашин', isCityTeam: true, text: '' },
     { allClimbId: 55862, year: '2011', photoName: 'armaj', name: 'Арина Мажара', isCityTeam: true, text: '' },

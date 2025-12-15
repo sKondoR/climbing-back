@@ -15,8 +15,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          logging: true,
+          logging: ['query', 'error', 'schema'],
+          logger: 'advanced-console',
           synchronize: false, // Be cautious about using synchronize in production
+          extra: {
+            max: 10, // Limit connections
+            connectionTimeoutMillis: 100000,
+            idleTimeoutMillis: 100000,
+            ssl: false,
+          },  
         };
       },
       // useFactory: (config: ConfigService) => config.get('database'),
@@ -25,3 +32,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   ],
 })
 export class DatabaseModule {}
+
+
+// Check connection with raw SQL client:
+// psql "$POSTGRES_URL"
