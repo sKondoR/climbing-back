@@ -16,14 +16,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
           logging: ['query', 'error', 'schema'],
-          logger: 'advanced-console',
-          synchronize: false, // Be cautious about using synchronize in production
-          extra: {
-            max: 10, // Limit connections
-            connectionTimeoutMillis: 100000,
-            idleTimeoutMillis: 100000,
-            ssl: false,
-          },  
+          // logger: 'advanced-console',
+          // synchronize: false, // Be cautious about using synchronize in production
+          // extra: {
+          //   max: 10, // Limit connections
+          //   connectionTimeoutMillis: 100000,
+          //   idleTimeoutMillis: 100000,
+          //   ssl: false,
+          // },  
         };
       },
       // useFactory: (config: ConfigService) => config.get('database'),
