@@ -1,12 +1,5 @@
 import { IRoutes } from 'src/climbers/climbers.interfaces';
-
-const PARSING_WORDS = {
-  COUNT: 'Пролазов в AllClimb',
-  SCORES: 'Баллов',
-  LEAD_WORD: 'Спорт.',
-  BOLDER_WORD: 'Боулдер.',
-  MULTI: 'Мультипитч.'
-}
+import { PARSING_WORDS } from './scraping.constants';
 
 interface IParseClimberInfo {
   name: string,
