@@ -48,6 +48,12 @@ describe('scraping.utils/parseClimbRegion', () => {
                                             Geyikbayırı. Antalya`;
     expect(parseClimbRegion(text)).toBe('Geyikbayırı. Antalya');
   });
+
+  it('должен извлекать регион/5', () => {
+    // eslint-disable-next-line prettier/prettier
+    const text = `Эверест 24. \n                   8a. \nМультипитч. \nТырныауз. Кабардино-Балкария`;
+    expect(parseClimbRegion(text)).toBe('Тырныауз. Кабардино-Балкария');
+  });
 });
 
 
@@ -99,6 +105,3 @@ describe('scraping.utils/filterRoutes', () => {
     expect(result.leads[0].region).toBe('');
   });
 });
-
-
-// Эверест 24.                    8a. Мультипитч. Тырныауз. Кабардино-Балкария

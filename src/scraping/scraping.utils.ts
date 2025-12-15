@@ -23,17 +23,24 @@ export const parseClimberInfo = (text: string): IParseClimberInfo => {
   };
 };
 
-// toDo: поправить для мультипитчей
-// Факирьянова Эверест 24
-// 24.  8a. Мультипитч. Тырныауз. Кабардино-Балкария
 export const parseClimbRegion = (text: string): string => {
   if (!text) return '';
-  const { LEAD_WORD, BOLDER_WORD } = PARSING_WORDS;
+  const { LEAD_WORD, BOLDER_WORD, MULTI } = PARSING_WORDS;
   const formatted = text.replaceAll('\n', '');
   const posLead = formatted.indexOf(PARSING_WORDS.LEAD_WORD);
   const posBold = formatted.indexOf(PARSING_WORDS.BOLDER_WORD);
-  const pos = posLead !== -1 ? posLead  + LEAD_WORD.length : posBold + BOLDER_WORD.length;
-  return formatted.substring(pos).trim();
+  const posMulti = formatted.indexOf(PARSING_WORDS.MULTI);
+  let posEnd = 0;
+  if (posLead !== -1) {
+    posEnd = posLead + LEAD_WORD.length;
+  }
+  if (posBold !== -1) {
+    posEnd = posBold + BOLDER_WORD.length;
+  }
+  if (posMulti !== -1) {
+    posEnd = posMulti + MULTI.length;
+  }
+  return formatted.substring(posEnd).trim();
 };
 
 export const filterRoutes = (routes: IRoutes) => {
