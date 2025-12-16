@@ -274,7 +274,8 @@ export class ScrapingService {
           }
 
           parsedCount = await getRoutesCount();
-          console.log(`${attempts} итерация загрузки - всего загруженно ${parsedCount} пролазов`);
+          // for debugging
+          // console.log(`${attempts} итерация загрузки - всего загруженно ${parsedCount} пролазов`);
           
           // Если количество элементов не изменилось, подождем немного и распарсим данные
           if (parsedCount === prevParsedCount) {
@@ -292,7 +293,7 @@ export class ScrapingService {
 
       const endTime = Date.now();
       const durationInSeconds = ((endTime - startTime) / 1000 / 60).toFixed(1);
-      console.log(`трас загруженно: ${result.length} после ${attempts} подгрузок за ${durationInSeconds} минут`);
+      console.log(`пролазов загруженно: ${result.length} после ${attempts} итераций за ${durationInSeconds} минут`);
       return {
         name,
         routesCount,
