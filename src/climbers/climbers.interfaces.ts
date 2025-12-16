@@ -1,12 +1,17 @@
-export interface IRoute {
-  isBoulder: boolean;
-  isTopRope: boolean;
-  grade: string;
-  name: string;
+export interface IParsedRoute {
   date: string;
-  region?: string;
   text: string;
 }
+
+export interface IRoute {
+  name: string;
+  grade: string;
+  isBoulder: boolean;
+  isTopRope: boolean;
+  region: string;
+  date: string;
+}
+
 export type IRoutes = Array<IRoute>;
 
 export interface IClimber {

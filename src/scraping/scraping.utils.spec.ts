@@ -1,5 +1,5 @@
-import { IRoutes } from 'src/climbers/climbers.interfaces';
-import { filterRoutes, parseClimberInfo, parseClimbRegion } from './scraping.utils';
+import { IRoutes, IParsedRoute } from 'src/climbers/climbers.interfaces';
+import { parseRoutesData, parseClimberInfo, parseClimbRegion } from './scraping.utils';
 
 describe('scraping.utils/parseClimberInfo', () => {
 
@@ -57,51 +57,53 @@ describe('scraping.utils/parseClimbRegion', () => {
 });
 
 
+describe('scraping.utils/parseRoutesData', () => {
+  it('должен фильтровать и разделять маршруты на лиды и боулдеры, удаляя дубликаты', () => {
+    const parsedRoutes: IParsedRoute[] = [
+      { text: 'Лестница библиотеки Лауренциана. \n     7a.  \n Боулдер.  \n Ренессанс. Карельский перешеек', date: 'дата1' },
+      { text: 'Эверест 24. \n                 8a.           \nМультипитч. \n  Тырныауз. Кабардино-Балкария', date: 'дата2' },
+      { text: 'Не альпинизм. \n                   6b+.    \nБоулдер.       \nДжан-Туган. Кабардино-Балкари', date: 'дата3' },
+      { text: 'Monkey Business. \n     8a.       \n   Спорт. \n                    Geyikbayırı. Antalya   ', date: 'дата4' },
+      { text: 'Не альпинизм. \n                   6b+.    \nБоулдер.       \nДжан-Туган. Кабардино-Балкари', date: 'дата5' },
+    ];
 
+    const result = parseRoutesData(parsedRoutes);
 
-describe('scraping.utils/filterRoutes', () => {
-  it('должен фильтровать и разделять маршруты на лиды и боулдеры', () => {
-    const routes: IRoutes = [
-      { name: 'Маршрут 1', grade: '6a', text: 'Спорт.Крым', isBoulder: false },
-      { name: 'Маршрут 2', grade: '7a', text: 'Боулдер.Адыгея', isBoulder: true },
-      { name: 'Маршрут 3', grade: '6b', text: 'Спорт.Крым', isBoulder: false },
-    ] as IRoutes;
-
-    const result = filterRoutes(routes);
-
-    expect(result.leads).toHaveLength(2);
-    expect(result.boulders).toHaveLength(1);
-    expect(result.leads[0].region).toBe('Крым');
-    expect(result.boulders[0].region).toBe('Адыгея');
-  });
-
-  it('должен удалять дубликаты по ключу name|grade|text', () => {
-    const routes: IRoutes = [
-      { name: 'Маршрут', grade: '6a', text: 'Спорт.Крым', isBoulder: false },
-      { name: 'Маршрут', grade: '6a', text: 'Спорт.Крым', isBoulder: false }, // дубль
-      { name: 'Боулдер', grade: '7a', text: 'Боулдер.Адыгея', isBoulder: true },
-      { name: 'Боулдер', grade: '7a', text: 'Боулдер.Адыгея', isBoulder: true }, // дубль
-    ] as IRoutes;
-
-    const result = filterRoutes(routes);
-
-    expect(result.leads).toHaveLength(1);
-    expect(result.boulders).toHaveLength(1);
-  });
-
-  it('должен корректно работать с пустым массивом', () => {
-    const result = filterRoutes([]);
-    expect(result.leads).toHaveLength(0);
-    expect(result.boulders).toHaveLength(0);
-  });
-
-  it('должен обрабатывать маршруты без текста', () => {
-    const routes: IRoutes = [
-      { name: 'Маршрут', grade: '6a', text: '', isBoulder: false },
-    ] as IRoutes;
-
-    const result = filterRoutes(routes);
-
-    expect(result.leads[0].region).toBe('');
+    expect(result.leads).toStrictEqual([
+      {
+        name: 'Эверест 24.',
+        grade: '8a.',
+        isBoulder: false,
+        isTopRope: false,
+        region: 'Тырныауз. Кабардино-Балкария',
+        date: 'дата2'
+      },
+      {
+        name: 'Monkey Business.',
+        grade: '8a.',
+        isBoulder: false,
+        isTopRope: false,
+        region: 'Geyikbayırı. Antalya',
+        date: 'дата4'
+      }
+    ]);
+    expect(result.boulders).toStrictEqual([
+      {
+        name: 'Лестница библиотеки Лауренциана.',
+        grade: '7a.',
+        isBoulder: true,
+        isTopRope: false,
+        region: 'Ренессанс. Карельский перешеек',
+        date: 'дата1'
+      },
+      {
+        name: 'Не альпинизм.',
+        grade: '6b+.',
+        isBoulder: true,
+        isTopRope: false,
+        region: 'Джан-Туган. Кабардино-Балкари',
+        date: 'дата3'
+      }
+    ]);
   });
 });

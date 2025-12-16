@@ -1,4 +1,4 @@
-import { IRoutes } from 'src/climbers/climbers.interfaces';
+import { IRoutes, IParsedRoute } from 'src/climbers/climbers.interfaces';
 import { PARSING_WORDS } from './scraping.constants';
 
 interface IParseClimberInfo {
@@ -36,26 +36,33 @@ export const parseClimbRegion = (text: string): string => {
   return formatted.substring(posEnd).trim();
 };
 
-export const filterRoutes = (routes: IRoutes) => {
+export const parseRoutesData = (routes: IParsedRoute[]): { leads: IRoutes, boulders: IRoutes } => {
   const leadsMap = new Map();
   const bouldersMap = new Map();
-
-  const getKey = (route) => `${route.name}|${route.grade}|${route.text}`;
-
   const leads = [];
   const boulders = [];
 
   for (const route of routes) {
-    const key = getKey(route);
-    const map = route.isBoulder ? bouldersMap : leadsMap;
-    const arr = route.isBoulder ? boulders : leads;
-    route.region = parseClimbRegion(route.text);
+    const rows = route.text.replaceAll('  ', '').split('\n');
+    const name = rows[0].trim();
+    const grade = rows[1].trim();
+    const isBoulder = route.text.includes(PARSING_WORDS.BOLDER_WORD);
+    const isTopRope = route.text.includes(PARSING_WORDS.TOP_ROPE);
+
+    const map = isBoulder ? bouldersMap : leadsMap;
+    const arr = isBoulder ? boulders : leads;
+    const region = parseClimbRegion(route.text);
+    const key = `${name}|${grade}|${region}`;
 
     if (!map.has(key)) {
       map.set(key, true);
       arr.push({
-        ...route,
-        region: parseClimbRegion(route.text)
+        name,
+        grade,
+        isBoulder,
+        isTopRope,
+        region,
+        date: route.date
       });
     }
   }

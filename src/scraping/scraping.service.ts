@@ -6,7 +6,7 @@ import {
   ALLCLIMB_URL,
   BUTTON_MORE_SELECTOR,
 } from './scraping.constants';
-import { filterRoutes, parseClimberInfo } from './scraping.utils';
+import { parseRoutesData, parseClimberInfo } from './scraping.utils';
 
 const chromium = require('@sparticuz/chromium');
 const os = require('os');
@@ -134,6 +134,7 @@ export class ScrapingService {
     let browser;
     let context;
     try {
+      const startTime = Date.now();
 
       // Проверяем доступное место перед началом работы
       this.checkDiskSpace();
@@ -210,21 +211,21 @@ export class ScrapingService {
       //   };
       // }
 
-      // Функция для извлечения маршрутов
+      // Функция для извлечения числа маршрутов
+      const getRoutesCount = async (): Promise<number> => {
+        return await page.$$eval('.news-preview', (elements) => {
+          return elements.length;
+        });
+      };
+
+      // Функция для извлечения текста маршрутов и даты пролаза
       const getRoutes = async (): Promise<any[]> => {
         return await page.$$eval('.news-preview', (elements) => {
           return elements.map((el) => {
             const titleEl = el.querySelector('.news-preview-title');
             const allText = titleEl?.textContent?.trim() || '';
-            const gradeEl = el.querySelector('h4');
-            const nameEl = el.querySelector('b');
             const dateEl = el.querySelector('.news-preview-date');
-
             return {
-              isBoulder: allText.includes('Боулдер'),
-              isTopRope: allText.includes('Верхняя страховка.'),
-              grade: gradeEl?.textContent?.trim() || '',
-              name: nameEl?.textContent?.trim() || '',
               date: dateEl?.textContent?.trim() || '',
               text: allText,
             };
@@ -232,14 +233,15 @@ export class ScrapingService {
         });
       };
 
-      let result = await getRoutes();
-      let previousLength = 0;
+      let result;
+      let parsedCount = await getRoutesCount();
+      let prevParsedCount = 0;
       let attempts = 0;
-      const maxAttempts = 50; // Защита от бесконечного цикла
+      const maxAttempts = 200; // Защита от бесконечного цикла
 
       // Клик по кнопке "Еще" до тех пор, пока загружаются новые элементы
-      while (result.length > previousLength && attempts < maxAttempts) {
-        previousLength = result.length;
+      while (parsedCount > prevParsedCount && attempts < maxAttempts) {
+        prevParsedCount = parsedCount;
         attempts++;
 
         const button = await page.$(BUTTON_MORE_SELECTOR);
@@ -271,10 +273,11 @@ export class ScrapingService {
             // Кнопка могла стать недоступной
           }
 
-          result = await getRoutes();
+          parsedCount = await getRoutesCount();
+          console.log(`${attempts} итерация загрузки - всего загруженно ${parsedCount} пролазов`);
           
-          // Если количество элементов не изменилось, подождем немного
-          if (result.length === previousLength) {
+          // Если количество элементов не изменилось, подождем немного и распарсим данные
+          if (parsedCount === prevParsedCount) {
             await page.waitForTimeout(1000);
             result = await getRoutes();
           }
@@ -285,11 +288,14 @@ export class ScrapingService {
         }
       }
 
-      console.log(`Пролазов загруженно: ${result.length} после ${attempts} подгрузок`);
-      const { leads, boulders } = filterRoutes(result);
+      const { leads, boulders } = parseRoutesData(result);
+
+      const endTime = Date.now();
+      const durationInSeconds = (endTime - startTime) / 1000 / 60;
+      console.log(`трас загруженно: ${result.length} после ${attempts} подгрузок за ${durationInSeconds} минут`);
       return {
         name,
-        routesCount: Number(routesCount),
+        routesCount,
         scores,
         leads,
         boulders,
