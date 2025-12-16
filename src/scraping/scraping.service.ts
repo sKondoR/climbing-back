@@ -192,9 +192,7 @@ export class ScrapingService {
 
       const h1WithError = await page.locator('h1:text-is("Server Error (500)")').first();
       if (await h1WithError.count()) {
-        throw new BadRequestException(
-          `Скалолаз с allclimbId ${id} отсутствует на Allclimb`
-        );
+        throw new Error(`Скалолаз с allclimbId ${id} отсутствует на Allclimb`);
       }
 
       // Получение имени скалолаза 
