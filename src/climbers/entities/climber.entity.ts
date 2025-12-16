@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { compressToUTF16, decompressFromUTF16 } from 'lz-string';
 
 import { IRoute } from '../climbers.interfaces';
 
@@ -13,11 +14,17 @@ export class ClimberEntity {
   @Column()
   name: string;
 
-  @Column({
-    type: 'jsonb',
-    array: false,
-    default: () => "'[]'",
-  })
+  @Column({ type: 'text', default: () => "'[]'" })
+  compressedData: string;
+  get data(): any {
+    return JSON.parse(decompressFromUTF16(this.compressedData));
+  }
+  set data(value: any) {
+    if (JSON.stringify(value).length > 1000000) {
+      throw new Error('Data too large');
+    }
+    this.compressedData = compressToUTF16(JSON.stringify(value));
+  }
   leads: IRoute[];
 
   @Column({
