@@ -291,7 +291,7 @@ export class ScrapingService {
       const { leads, boulders } = parseRoutesData(result);
 
       const endTime = Date.now();
-      const durationInSeconds = (endTime - startTime) / 1000 / 60;
+      const durationInSeconds = ((endTime - startTime) / 1000 / 60).toFixed(1);
       console.log(`трас загруженно: ${result.length} после ${attempts} подгрузок за ${durationInSeconds} минут`);
       return {
         name,
