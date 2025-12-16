@@ -190,8 +190,8 @@ export class ScrapingService {
         timeout: 30000,
       });
 
-      const noClimberError = await page.textContent('Server Error (500)');
-      if (noClimberError) {
+      const h1WithError = await page.locator('h1:text-is("Server Error (500)")').first();
+      if (await h1WithError.count()) {
         throw new BadRequestException(
           `Скалолаз с allclimbId ${id} отсутствует на Allclimb`
         );
