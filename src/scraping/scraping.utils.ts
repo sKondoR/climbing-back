@@ -44,6 +44,9 @@ export const parseRoutesData = (routes: IParsedRoute[]): { leads: IRoutes, bould
 
   for (const route of routes) {
     const rows = route.text.replaceAll('  ', '').split('\n');
+    console.log('parseRoutesData: ');
+    console.log('route.text: ', route.text);
+    console.log('rows: ', rows);
     const name = rows[0].trim();
     const grade = rows[1].trim();
     const isBoulder = route.text.includes(PARSING_WORDS.BOLDER_WORD);
