@@ -3,6 +3,7 @@ import { compressToUTF16, decompressFromUTF16 } from 'lz-string';
 
 import { IRoute } from '../climbers.interfaces';
 
+
 @Entity() // Declares the class as an entity
 export class ClimberEntity {
   @PrimaryGeneratedColumn() // Auto-incremented primary key
@@ -15,17 +16,16 @@ export class ClimberEntity {
   name: string;
 
   @Column({ type: 'text', default: () => "'[]'" })
-  compressedData: string;
+  leads: string;
   get data(): any {
-    return JSON.parse(decompressFromUTF16(this.compressedData));
+    return JSON.parse(decompressFromUTF16(this.leads));
   }
   set data(value: any) {
     if (JSON.stringify(value).length > 1000000) {
       throw new Error('Data too large');
     }
-    this.compressedData = compressToUTF16(JSON.stringify(value));
+    this.leads = compressToUTF16(JSON.stringify(value));
   }
-  leads: IRoute[];
 
   @Column({
     type: 'jsonb',
