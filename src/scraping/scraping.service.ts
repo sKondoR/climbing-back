@@ -190,6 +190,13 @@ export class ScrapingService {
         timeout: 30000,
       });
 
+      const noClimberError = await page.textContent('Server Error (500)');
+      if (noClimberError) {
+        throw new BadRequestException(
+          `Скалолаз с allclimbId ${id} отсутствует на Allclimb`
+        );
+      }
+
       // Получение имени скалолаза 
       const climberInfo = await page.textContent('.climber-info-block > p');
       const trimmedInfo = climberInfo?.trim() || '';
