@@ -43,7 +43,7 @@ export const parseRoutesData = (routes: IParsedRoute[]): { leads: IRoutes, bould
   const boulders = [];
 
   for (const route of routes) {
-    const rows = route.text.replaceAll('  ', '').split('\n');
+    const rows = route.text.replaceAll('  ', '').split('.');
     console.log('parseRoutesData: ');
     console.log('route.text: ', route.text);
     console.log('rows: ', rows);

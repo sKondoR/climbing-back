@@ -71,16 +71,16 @@ describe('scraping.utils/parseRoutesData', () => {
 
     expect(result.leads).toStrictEqual([
       {
-        name: 'Эверест 24.',
-        grade: '8a.',
+        name: 'Эверест 24',
+        grade: '8a',
         isBoulder: false,
         isTopRope: false,
         region: 'Тырныауз. Кабардино-Балкария',
         date: 'дата2'
       },
       {
-        name: 'Monkey Business.',
-        grade: '8a.',
+        name: 'Monkey Business',
+        grade: '8a',
         isBoulder: false,
         isTopRope: false,
         region: 'Geyikbayırı. Antalya',
@@ -89,16 +89,16 @@ describe('scraping.utils/parseRoutesData', () => {
     ]);
     expect(result.boulders).toStrictEqual([
       {
-        name: 'Лестница библиотеки Лауренциана.',
-        grade: '7a.',
+        name: 'Лестница библиотеки Лауренциана',
+        grade: '7a',
         isBoulder: true,
         isTopRope: false,
         region: 'Ренессанс. Карельский перешеек',
         date: 'дата1'
       },
       {
-        name: 'Не альпинизм.',
-        grade: '6b+.',
+        name: 'Не альпинизм',
+        grade: '6b+',
         isBoulder: true,
         isTopRope: false,
         region: 'Джан-Туган. Кабардино-Балкари',
