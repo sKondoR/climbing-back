@@ -9,21 +9,25 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: (configService: ConfigService) => {
         return {
           type: 'postgres',
-          host: 'localhost',
+          host: configService.get('POSTGRES_HOST'),
           url: configService.get('POSTGRES_URL'),
           directUrl: configService.get('POSTGRES_URL_NON_POOLING'),
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          logging: ['query', 'error', 'schema'],
-          // logger: 'advanced-console',
-          // synchronize: false, // Be cautious about using synchronize in production
-          // extra: {
-          //   max: 10, // Limit connections
-          //   connectionTimeoutMillis: 100000,
-          //   idleTimeoutMillis: 100000,
-          //   ssl: false,
-          // },  
+          logging: true,
+          synchronize: false, // Be cautious about using synchronize in production
+          
+          // Добавьте следующие параметры для борьбы с "замерзанием" на Vercel
+          keepConnectionAlive: true,
+          extra: {
+            // Управление пулом соединений
+            max: 1, // Vercel Serverless ограничивает количество соединений
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 20000,
+            // Recycle connection after 5 uses
+            maxUses: 5, 
+          },
         };
       },
       // useFactory: (config: ConfigService) => config.get('database'),
