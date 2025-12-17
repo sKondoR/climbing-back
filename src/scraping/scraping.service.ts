@@ -240,8 +240,10 @@ export class ScrapingService {
           return elements.map((el) => {
             const titleEl = el.querySelector('.news-preview-title');
             const allText = titleEl?.textContent?.trim() || '';
+            const gradeEl = el.querySelector('h4');
             const dateEl = el.querySelector('.news-preview-date');
             return {
+              grade: gradeEl?.textContent?.trim() || '',
               date: dateEl?.textContent?.trim() || '',
               text: allText,
             };

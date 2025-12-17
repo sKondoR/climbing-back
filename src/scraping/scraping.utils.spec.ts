@@ -60,11 +60,14 @@ describe('scraping.utils/parseClimbRegion', () => {
 describe('scraping.utils/parseRoutesData', () => {
   it('должен фильтровать и разделять маршруты на лиды и боулдеры, удаляя дубликаты', () => {
     const parsedRoutes: IParsedRoute[] = [
-      { text: 'Лестница библиотеки Лауренциана. \n     7a.  \n Боулдер.  \n Ренессанс. Карельский перешеек', date: 'дата1' },
-      { text: 'Эверест 24. \n                 8a.           \nМультипитч. \n  Тырныауз. Кабардино-Балкария', date: 'дата2' },
-      { text: 'Не альпинизм. \n                   6b+.    \nБоулдер.       \nДжан-Туган. Кабардино-Балкари', date: 'дата3' },
-      { text: 'Monkey Business. \n     8a.       \n   Спорт. \n                    Geyikbayırı. Antalya   ', date: 'дата4' },
-      { text: 'Не альпинизм. \n                   6b+.    \nБоулдер.       \nДжан-Туган. Кабардино-Балкари', date: 'дата5' },
+      { text: 'Лестница библиотеки Лауренциана. \n     7a.  \n Боулдер.  \n Ренессанс. Карельский перешеек', date: 'дата1', grade: '7a' },
+      { text: 'Эверест 24. \n                 8a.           \nМультипитч. \n  Тырныауз. Кабардино-Балкария', date: 'дата2', grade: '8a' },
+      { text: 'Не альпинизм. \n                   6b+.    \nБоулдер.       \nДжан-Туган. Кабардино-Балкари', date: 'дата3', grade: '6b+' },
+      { text: 'Monkey Business. \n     7с/8a.       \n   Спорт. \n                    Geyikbayırı. Antalya   ', date: 'дата4', grade: '7с/8a' },
+      { text: 'Не альпинизм. \n                   6b+.    \nБоулдер.       \nДжан-Туган. Кабардино-Балкари', date: 'дата5', grade: '6b+' },
+      { text: `Королева Треугольного. 
+                                        Боулдер. 
+                                        Треугольное. Карельский перешеек`, date: 'дата6', grade: '6с' }
     ];
 
     const result = parseRoutesData(parsedRoutes);
@@ -80,7 +83,7 @@ describe('scraping.utils/parseRoutesData', () => {
       },
       {
         name: 'Monkey Business',
-        grade: '8a',
+        grade: '7с/8a',
         isBoulder: false,
         isTopRope: false,
         region: 'Geyikbayırı. Antalya',
@@ -103,6 +106,14 @@ describe('scraping.utils/parseRoutesData', () => {
         isTopRope: false,
         region: 'Джан-Туган. Кабардино-Балкари',
         date: 'дата3'
+      },
+      {
+        name: 'Королева Треугольного',
+        grade: '6с',
+        isBoulder: true,
+        isTopRope: false,
+        region: 'Треугольное. Карельский перешеек',
+        date: 'дата6'
       }
     ]);
   });

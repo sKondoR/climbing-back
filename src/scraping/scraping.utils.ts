@@ -47,20 +47,19 @@ export const parseRoutesData = (routes: IParsedRoute[]): { leads: IRoutes, bould
     // for debudding
     console.log('parseRoutesData for: ', route.text, rows);
     const name = rows[0].trim();
-    const grade = rows[1].trim();
     const isBoulder = route.text.includes(PARSING_WORDS.BOLDER_WORD);
     const isTopRope = route.text.includes(PARSING_WORDS.TOP_ROPE);
 
     const map = isBoulder ? bouldersMap : leadsMap;
     const arr = isBoulder ? boulders : leads;
     const region = parseClimbRegion(route.text);
-    const key = `${name}|${grade}|${region}`;
+    const key = `${name}|${route.grade}|${region}`;
 
     if (!map.has(key)) {
       map.set(key, true);
       arr.push({
         name,
-        grade,
+        grade: route.grade,
         isBoulder,
         isTopRope,
         region,

@@ -1,4 +1,5 @@
 export interface IParsedRoute {
+  grade: string;
   date: string;
   text: string;
 }
