@@ -44,7 +44,7 @@ export class AuthService {
     auth: AuthEntity,
     skipPasswordCheck: boolean = false,
   ): Promise<UpdateUserDto> {
-    const user = await this.usersService.findByAllClimbId(auth.allClimbId);
+    const user = await this.usersService.findByVkId(auth.vk_id);
 
     if (!user) {
       throw new BadRequestException('User not found');
@@ -64,7 +64,7 @@ export class AuthService {
     }
 
     return {
-      ...auth,
+      ...user,
       password: await this.jwtService.sign({ id: user.id }),
     };
   }

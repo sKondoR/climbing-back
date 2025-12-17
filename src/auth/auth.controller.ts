@@ -15,7 +15,6 @@ import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { IGrant } from '../users/users.interfaces';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
-import { TEAM, FRIENDS } from '../users/users.constants';
 
 @Controller('auth')
 export class AuthController {
@@ -54,7 +53,6 @@ export class AuthController {
 
       const newUser = {
         vk_id: vkUser.id,
-        allClimbId: authData.allClimbId,
         name: `${vkUser.first_name} ${vkUser.last_name}`,
         avatar_url: vkUser.photo_400,
         password: null,
@@ -87,20 +85,20 @@ export class AuthController {
     return this.authService.authenticate(auth);
   }
 
-  @Post('/register')
-  async register(
-    @Body(new ValidationPipe()) user: UserEntity,
-  ): Promise<UpdateUserDto> {
-    const emailExists = await this.userService.findByAllClimbId(
-      user.allClimbId,
-    );
+  // @Post('/register')
+  // async register(
+  //   @Body(new ValidationPipe()) user: UserEntity,
+  // ): Promise<UpdateUserDto> {
+  //   const emailExists = await this.userService.findByAllClimbId(
+  //     user.allClimbId,
+  //   );
 
-    if (emailExists) {
-      throw new UnprocessableEntityException('allClimbId already exists!');
-    }
+  //   if (emailExists) {
+  //     throw new UnprocessableEntityException('allClimbId already exists!');
+  //   }
 
-    await this.userService.create(user);
+  //   await this.userService.create(user);
 
-    return this.authService.authenticate(user);
-  }
+  //   return this.authService.authenticate(user);
+  // }
 }
