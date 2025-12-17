@@ -216,6 +216,17 @@ export class ScrapingService {
       //   };
       // }
 
+      if(!routesCount) {
+        console.log('Скалолаз без пролазов');
+        return {
+          name,
+          routesCount,
+          scores,
+          leads: [],
+          boulders: [],
+        };
+      }
+
       // Функция для извлечения числа маршрутов
       const getRoutesCount = async (): Promise<number> => {
         return await page.$$eval('.news-preview', (elements) => {
