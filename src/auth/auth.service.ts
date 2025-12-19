@@ -127,8 +127,9 @@ export class AuthService {
    */
   async getUserDataFromVk(userId: string, token: string): Promise<any> {
     const params = new URLSearchParams({
-      fields: 'photo_400,has_mobile,home_town,contacts,mobile_phone',
+      fields: 'photo_100,contacts',
       access_token: token,
+      photo_sizes: '1',
       v: '5.245',
     });
 
