@@ -24,17 +24,17 @@ export default async function migrate({
 
   try {
     await dataSource.initialize();
-    console.log('База инициализированна');
+    console.log('база инициализированна');
 
     const repository = dataSource.getRepository(entity);
     // Очистка репозитория перед миграцией
     await repository.clear();
-    console.log('repository очищен');
+    console.log('старые данные удаленны');
     await doMigration(repository);
   } catch (error) {
-    console.error('Ошибка при миграции teamRepository:', error);
+    console.error('ошибка при миграции teamRepository:', error);
     process.exit(1);
   } finally {
-    await dataSource.destroy(); // Properly close connection
+    await dataSource.destroy();
   }
 }

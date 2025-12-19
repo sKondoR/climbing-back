@@ -1,5 +1,7 @@
+import { IEvent } from 'src/schedule/schedule.interfaces';
+
 /* eslint-disable prettier/prettier */
-export const SCHEDULE = [
+export const SCHEDULE: IEvent[] = [
     {
         weekDay: 'Понедельник',
         fromTime: '17:00',
@@ -16,16 +18,23 @@ export const SCHEDULE = [
     },
     {
         weekDay: 'Четверг',
-        fromTime: '15:00',
-        toTime: '16:30',
-        place: 'Неолит Питаль Н.П.',
-        type: 'BOULDER',
+        fromTime: '17:30',
+        toTime: '19:00',
+        place: 'Робототехника',
+        type: 'HOBBY',
     },
     {
         weekDay: 'Пятница',
         fromTime: '17:00',
         toTime: '21:00',
         place: 'Неолит',
+        type: 'BOULDER',
+    },
+    {
+        weekDay: 'Воскресенье',
+        fromTime: '12:00',
+        toTime: '15:00',
+        place: 'Луч',
         type: 'BOULDER',
     },
     {
@@ -59,7 +68,7 @@ export const SCHEDULE = [
     {
         weekDay: 'Четверг',
         fromTime: '9:00',
-        toTime: '14:00',
+        toTime: '15:00',
         type: 'SCHOOL',
         place: 'школа'
     },
