@@ -2,7 +2,7 @@ import { Controller, Get, Delete } from '@nestjs/common';
 
 import { CreateEventDto } from './dto/create-event.dto';
 import { ScheduleService } from './schedule.service';
-import { SCHEDULE } from '../migrate/schedule';
+import { SCHEDULE } from '../migrate/data/schedule';
 
 @Controller('schedule-migrate')
 export class ScheduleFullController {
