@@ -6,7 +6,6 @@ export const TEAM = [
     { allClimbId: 64672, year: '2014', photoName: 'alvor', name: 'Алиса Воронова', isCityTeam: true, text: '' },
     { allClimbId: null , year: '2010', photoName: 'madas', name: 'Маша Дашкевич', text: '' },
     { allClimbId: 54736, year: '2009', photoName: 'vadia', name: 'Варя Дьячкова', isCityTeam: true, text: '' },
-    { allClimbId: null , year: '2012', photoName: 'vaevd', name: 'Ваня Евдокимов', text: '' },
     { allClimbId: 47913, year: '2011', photoName: 'glere', name: 'Глеб Еремин', isCityTeam: true, text: '' },
     { allClimbId: null , year: '2010', photoName: 'efrit', name: 'Ефимова Рита', isCityTeam: true, text: '' },
     { allClimbId: null , year: '2012', photoName: 'stzur', name: 'Стася Зырянова', isCityTeam: true, text: '' },
