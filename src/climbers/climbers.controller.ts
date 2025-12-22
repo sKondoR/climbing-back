@@ -40,4 +40,9 @@ export class ClimbersController {
   remove(@Param('id') id: string) {
     return this.climbersService.remove(+id);
   }
+
+  @Get('allclimbId/:allclimbId')
+  findByAllClimbId(@Param('allclimbId') allclimbId: number) {
+    return this.climbersService.findOneByAllclimbId(allclimbId);
+  }
 }
