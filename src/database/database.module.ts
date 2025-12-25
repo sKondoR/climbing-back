@@ -38,7 +38,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           keepConnectionAlive: true,
           extra: {
             max: 1, // Ограничение соединений из-за ограничений Vercel Serverless
-            idleTimeoutMillis: 30000, // Время ожидания бездействия перед закрытием соединения
+            idleTimeoutMillis: 600000, // Время ожидания бездействия перед закрытием соединения
             connectionTimeoutMillis: 20000, // Таймаут подключения к базе данных
             // maxUses: 1, // Максимальное количество использований одного соединения перед пересозданием
           }
