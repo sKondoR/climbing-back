@@ -28,7 +28,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          synchronize: true, // Be cautious about using synchronize in production
+          synchronize: false, // Be cautious about using synchronize in production
           logging: true,
           ssl: isProd ? {
             rejectUnauthorized: false // Required for Neon, Supabase, etc.
