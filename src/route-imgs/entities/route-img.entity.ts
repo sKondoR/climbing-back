@@ -5,12 +5,23 @@ export class RouteImgEntity {
   @PrimaryColumn({ type: 'varchar', length: 255 })
   id: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   url: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   imgUrl: string;
 
-  @Column('bytea')
+  @Column('bytea', {
+    nullable: true,
+  })
   imageData: Buffer;
+
+  @Column({
+    nullable: true,
+  })
+  error: string;
 }

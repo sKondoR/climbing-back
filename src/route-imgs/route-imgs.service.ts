@@ -7,7 +7,7 @@ import { CreateRouteImgDto } from './dto/create-route-img.dto';
 import { UpdateRouteImgDto } from './dto/update-route-img.dto';
 import { RouteImgEntity } from './entities/route-img.entity';
 import { ALLCLIMB_URL } from 'src/scraping/scraping.constants';
-import { IRouteImg, ISearchRoute } from './route-imgs.interfaces';
+import { IRouteImg, IRouteImgError, ISearchRoute } from './route-imgs.interfaces';
 import { checkDiskSpace, cleanupTempDir, logMemoryUsage } from 'src/scraping/scraping.utils';
 
 const chromium = require('@sparticuz/chromium');
@@ -20,28 +20,32 @@ export class RouteImgsService {
   ) {}
 
   async create(createRouteImgsDto: CreateRouteImgDto): Promise<RouteImgEntity> {
+    console.log('here3');
     const routeImg = new RouteImgEntity();
     routeImg.id = createRouteImgsDto.id;
     routeImg.url = createRouteImgsDto.url;
     routeImg.imgUrl = createRouteImgsDto.imgUrl;
     routeImg.imageData = createRouteImgsDto.imageData;
-    console.log('Скриншот сохранён с ID:', routeImg.id);
+    routeImg.error = createRouteImgsDto.error;
     return await this.routeImgsRepository.save(routeImg);
   }
 
-  async findAll(): Promise<RouteImgEntity[]> {
-    return await this.routeImgsRepository.find();
-  }
+  // async findAll(): Promise<RouteImgEntity[]> {
+  //   return await this.routeImgsRepository.find();
+  // }
 
-  async findOne(id: string): Promise<IRouteImg> {
+  async findOne(id: string): Promise<IRouteImg | IRouteImgError> {
     const saved = await this.routeImgsRepository.findOne({ where: { id } });
-    console.log('here', id, saved);
-    // сохранение локально
-    require('fs').writeFileSync('downloaded.png', saved.imageData);
     if (saved) {
-      return saved; // Buffer → файл
+      return saved;
     }
-    return await this.routeImgsRepository.findOne({ where: { id } });
+    const routeImg = await this.getRouteImgByName({
+      name: id.split('-')[0],
+      region: id.split('-')[1],
+    });
+    console.log('findOne ', routeImg);
+    await this.create(routeImg);
+    return routeImg;
   }
 
   // async findOneByAllclimbId(allClimbId: number): Promise<RouteImgEntity> {
@@ -64,13 +68,20 @@ export class RouteImgsService {
     return routeImg;
   }
 
-  async remove(id: number): Promise<void> {
-    await this.routeImgsRepository.delete(id);
-  }
+  // async remove(id: number): Promise<void> {
+  //   await this.routeImgsRepository.delete(id);
+  // }
 
-  async getRouteImgByName(route: ISearchRoute): Promise<IRouteImg> {
+  async getRouteImgByName(route: ISearchRoute): Promise<IRouteImg | IRouteImgError> {
     let browser;
     let context;
+
+    const id = `${route.name}-${route.region}`;
+    const routeImg = await this.routeImgsRepository.findOne({ where: { id } });
+    if (routeImg?.error || routeImg?.imageData) {
+      return routeImg;
+    }
+    
     try {
       // const startTime = Date.now();
 
@@ -103,7 +114,7 @@ export class RouteImgsService {
 
       console.log('Браузер запущен, создание context и page...');
       context = await browser.newContext({
-        viewport: { width: 1280, height: 800 },
+        viewport: { width: 1800, height: 900 },
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
       });
       
@@ -114,7 +125,7 @@ export class RouteImgsService {
       await page.route('**/*', (route) => {
         const resourceType = route.request().resourceType();
         // const blockedResources = ['image', 'stylesheet', 'font', 'media'];
-        const blockedResources = ['font', 'media'];
+        const blockedResources = [];
         if (blockedResources.includes(resourceType)) {
           route.abort();
         } else {
@@ -130,17 +141,25 @@ export class RouteImgsService {
       });
 
       // заполняем автокомплит поиска именем трассы
-      console.log('Переход на страницу с полем поиска...');
       await page.fill('#searchfor', route.name);
       await page.press('#searchfor', 'Enter');
 
       // выбираем ссылку содержащую название базового региона
       const baseRegion = route.region.split('.')[0].trim();
-      console.log('baseRegion>', `(${baseRegion})`);
-      await page.click(`a:has-text('${route.name}'):has-text('${baseRegion}')`);
+      console.log('Переход на страницу трассы...');
+      // :not([href*="OLD"]) некоторые сектора имеют OLD в ссылке - это старые фото
+      await page.click(`a:has-text('${route.name}'):has-text('${baseRegion}'):not([href*="OLD"])`);
 
       // ждём, пока все сетевые запросы не завершатся
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('networkidle');
+
+      const errorLocator = page.getByText(/Server Error \(500\)/);
+      if (await errorLocator.count()) {
+        return {
+          id,
+          error: 'Изображение трассы недоступно на AllClimb',
+        };
+      }
 
       const routeButton = await page.locator('.items-preview').filter({ hasText: route.name });
       if (!routeButton) {
@@ -153,6 +172,7 @@ export class RouteImgsService {
       await page.click(`.items-preview-route-title:has-text('${route.name}')`);
       await page.waitForLoadState('networkidle');
 
+      const url = page.url();
       const imageUrl = await page.locator('.route-portrait img').getAttribute('src');
       console.log(imageUrl);
 
@@ -162,6 +182,8 @@ export class RouteImgsService {
 
       // Наведение на элемент
       await page.hover(`.items-preview-route-title:has-text('${route.name}')`);
+      // иногда ховер не успевает сработать без ожидания
+      await page.waitForTimeout(500);
 
       const imgLocator = page.locator(`img[src*="${imageUrl.split('.jpg')[0]}"]`);
       const imgBox = await imgLocator.boundingBox();
@@ -178,14 +200,17 @@ export class RouteImgsService {
       const screenshotBuffer = await page.screenshot({
         encoding: 'binary',
         clip: screenshotBox,
+        type: 'jpeg',
       });
 
-      return {
-        id: `${route.name}`,
-        url: '',
-        imgUrl: '',
+      const routeImg = {
+        id,
+        url,
+        imgUrl: imageUrl,
         imageData: screenshotBuffer,
       };
+
+      return routeImg;
     } catch (error) {
       throw new BadRequestException(
         'Ошибка парсинга изображения трассы на Allclimb: ' + error,

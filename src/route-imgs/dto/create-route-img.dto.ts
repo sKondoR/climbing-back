@@ -1,8 +1,9 @@
 export class CreateRouteImgDto {
   id: string;
-  url: string;
-  imgUrl: string;
-  imageData: Buffer;
+  url?: string;
+  imgUrl?: string;
+  imageData?: Buffer;
+  error?: string;
 }
 
 
