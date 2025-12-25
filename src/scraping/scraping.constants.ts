@@ -1,4 +1,4 @@
-export const ALLCLIMB_URL = 'https://www.allclimb.com/ru/climber';
+export const ALLCLIMB_URL = 'https://www.allclimb.com';
 export const LOCAL_CHROME_EXECUTABLE =
   'C:/Program Files/Google/Chrome/Application/chrome.exe';
 

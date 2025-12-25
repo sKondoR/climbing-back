@@ -11,6 +11,7 @@ import { TeamModule } from './team/team.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { LeadTrainingModule } from './lead-training/lead-training.module';
 import { HealthyModule } from './healthy/healthy.module';
+import { RouteImgsModule } from './route-imgs/route-imgs.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { HealthyModule } from './healthy/healthy.module';
     ScheduleModule,
     LeadTrainingModule,
     HealthyModule,
+    RouteImgsModule,
   ],
   controllers: [],
   providers: [JwtService],

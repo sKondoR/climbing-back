@@ -1,0 +1,45 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+
+import { CreateRouteImgDto } from './dto/create-route-img.dto';
+import { UpdateRouteImgDto } from './dto/update-route-img.dto';
+import { RouteImgsService } from './route-imgs.service';
+import { ISearchRoute } from './route-imgs.interfaces';
+
+@Controller('route-imgs')
+export class RouteImgsController {
+  constructor(private readonly routeImgsService: RouteImgsService) {}
+
+  @Post()
+  async create(@Body() searchRoute: ISearchRoute) {
+    const routeImg = await this.routeImgsService.getRouteImgByName(searchRoute);
+    return this.routeImgsService.create(routeImg);
+  }
+
+  @Get()
+  findAll() {
+    return this.routeImgsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.routeImgsService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateRouteImgDto: UpdateRouteImgDto) {
+    return this.routeImgsService.update(id, updateRouteImgDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.routeImgsService.remove(+id);
+  }
+}
