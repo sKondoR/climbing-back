@@ -20,7 +20,6 @@ export class RouteImgsService {
   ) {}
 
   async create(createRouteImgsDto: CreateRouteImgDto): Promise<RouteImgEntity> {
-    console.log('here3');
     const routeImg = new RouteImgEntity();
     routeImg.id = createRouteImgsDto.id;
     routeImg.url = createRouteImgsDto.url;
@@ -43,7 +42,6 @@ export class RouteImgsService {
       name: id.split('-')[0],
       region: id.split('-')[1],
     });
-    console.log('findOne ', routeImg);
     await this.create(routeImg);
     return routeImg;
   }
@@ -147,11 +145,16 @@ export class RouteImgsService {
       // выбираем ссылку содержащую название базового региона
       const baseRegion = route.region.split('.')[0].trim();
       console.log('Переход на страницу трассы...');
+      // для отладки
+      console.log('debug: ', route.name, ' / ', baseRegion);
       // :not([href*="OLD"]) некоторые сектора имеют OLD в ссылке - это старые фото
       await page.click(`a:has-text('${route.name}'):has-text('${baseRegion}'):not([href*="OLD"])`);
 
       // ждём, пока все сетевые запросы не завершатся
+      // для отладки
+      console.log('networkidle try');
       await page.waitForLoadState('networkidle');
+      console.log('networkidle finished');
 
       const errorLocator = page.getByText(/Server Error \(500\)/);
       if (await errorLocator.count()) {

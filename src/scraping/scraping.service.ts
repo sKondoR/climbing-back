@@ -77,7 +77,7 @@ export class ScrapingService {
       // Переход на страницу скалолаза
       await page.goto(`${ALLCLIMB_URL}/ru/climber/${id}`, {
         waitUntil: 'domcontentloaded',
-        timeout: 30000,
+        timeout: 60000,
       });
 
       const h1WithError = await page.locator('h1:text-is("Server Error (500)")').first();
