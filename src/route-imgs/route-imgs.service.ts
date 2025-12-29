@@ -201,7 +201,7 @@ export class RouteImgsService {
       await page.waitForTimeout(1500);
 
       const format = imageUrl.includes('.jpg') ? '.jpg' : '.jpeg';
-      const imgLocator = page.locator(`img[src*="${imageUrl.split(format)[0]}"]`);
+      const imgLocator = page.locator(`img[src*="${imageUrl.split(format)[0]}${format}"]`);
       const imgBox = await imgLocator.boundingBox();
       if (!imgBox) {
         throw new Error('Не удалось получить координаты изображения');
