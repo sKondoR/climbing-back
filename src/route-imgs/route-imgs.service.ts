@@ -148,13 +148,18 @@ export class RouteImgsService {
       // для отладки
       console.log('debug: ', route.name, ' / ', baseRegion);
       // :not([href*="OLD"]) некоторые сектора имеют OLD в ссылке - это старые фото
-      await page.click(`a:has-text('${route.name}'):has-text('${baseRegion}'):not([href*="OLD"])`);
+      // await page.click(`a:has-text('${route.name}'):has-text('${baseRegion}'):not([href*="OLD"])`);
+      await page
+        .locator('a')
+        .filter({ hasText: route.name }) 
+        .filter({ hasText: baseRegion })
+        .filter({ has: page.locator(':not([href*="OLD"])') })
+        .first() 
+        .click({ force: true });
 
-      // ждём, пока все сетевые запросы не завершатся
-      // для отладки
-      console.log('domcontentloaded try');
+
+      // ждём, пока все страница не загрузится
       await page.waitForLoadState('domcontentloaded');
-      console.log('domcontentloaded finished');
 
       const errorLocator = page.getByText(/Server Error \(500\)/);
       if (await errorLocator.count()) {
@@ -164,19 +169,20 @@ export class RouteImgsService {
         };
       }
 
-      const routeButton = await page.locator('.items-preview').filter({ hasText: route.name });
-      if (!routeButton) {
-        console.log('Кнопка трассы не найдена');
-      }
-      console.log('Кнопка трассы найдена', routeButton);
-
+      await page.waitForTimeout(500);
       // Наведение на элемент
-      // await page.hover(`.items-preview-route-title:has-text('${route.name}')`);
-      await page.click(`.items-preview-route-title:has-text('${route.name}')`);
+      await page
+        .locator('.items-preview')
+        .filter({ hasText: route.name })
+        .first()
+        .click({ force: true });
       await page.waitForLoadState('domcontentloaded');
 
       const url = page.url();
-      const imageUrl = await page.locator('.route-portrait img').getAttribute('src');
+      const parsedImageUrl = await page.locator('.route-portrait img')
+        .getAttribute('src');
+
+      const imageUrl = parsedImageUrl.replace('.JPG', '.jpg')
       console.log(imageUrl);
 
       // Возвращаемся на предыдущую страницу
@@ -184,9 +190,13 @@ export class RouteImgsService {
       await page.waitForLoadState('domcontentloaded');
 
       // Наведение на элемент
-      await page.hover(`.items-preview-route-title:has-text('${route.name}')`);
+      await page
+        .locator('.items-preview')
+        .filter({ hasText: route.name })
+        .first()
+        .hover();
       // иногда ховер не успевает сработать без ожидания
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1500);
 
       const imgLocator = page.locator(`img[src*="${imageUrl.split('.jpg')[0]}"]`);
       const imgBox = await imgLocator.boundingBox();

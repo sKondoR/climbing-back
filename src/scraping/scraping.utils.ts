@@ -47,7 +47,7 @@ export const parseRoutesData = (routes: IParsedRoute[]): { leads: IRoutes, bould
   const boulders = [];
   if (!routes) return { leads, boulders };
   for (const route of routes) {
-    const rows = route.text.replaceAll('  ', '').split('.');
+    const rows = route.text.replaceAll('&nbsp;', ' ').split('.');
     // for debudding
     console.log('parseRoutesData for: ', route.text, rows);
     const name = rows[0].trim();
