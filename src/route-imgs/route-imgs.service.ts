@@ -169,7 +169,7 @@ export class RouteImgsService {
         };
       }
 
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1500);
       // Наведение на элемент
       await page
         .locator('.items-preview')
