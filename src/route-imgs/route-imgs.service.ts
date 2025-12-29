@@ -152,9 +152,9 @@ export class RouteImgsService {
 
       // ждём, пока все сетевые запросы не завершатся
       // для отладки
-      console.log('networkidle try');
-      await page.waitForLoadState('networkidle');
-      console.log('networkidle finished');
+      console.log('domcontentloaded try');
+      await page.waitForLoadState('domcontentloaded');
+      console.log('domcontentloaded finished');
 
       const errorLocator = page.getByText(/Server Error \(500\)/);
       if (await errorLocator.count()) {
@@ -173,7 +173,7 @@ export class RouteImgsService {
       // Наведение на элемент
       // await page.hover(`.items-preview-route-title:has-text('${route.name}')`);
       await page.click(`.items-preview-route-title:has-text('${route.name}')`);
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
 
       const url = page.url();
       const imageUrl = await page.locator('.route-portrait img').getAttribute('src');
@@ -181,7 +181,7 @@ export class RouteImgsService {
 
       // Возвращаемся на предыдущую страницу
       await page.goBack();
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
 
       // Наведение на элемент
       await page.hover(`.items-preview-route-title:has-text('${route.name}')`);
@@ -228,25 +228,4 @@ export class RouteImgsService {
     }
   }
 
-  // async function addTextToJpg() {
-  //   const image = await loadImage('input.jpg');
-  //   const canvas = createCanvas(image.width, image.height);
-  //   const ctx = canvas.getContext('2d');
-
-  //   // Draw the original image
-  //   ctx.drawImage(image, 0, 0);
-
-  //   // Set text styles
-  //   ctx.font = '40px Arial';
-  //   ctx.fillStyle = 'red';
-  //   ctx.strokeStyle = 'black';
-  //   ctx.lineWidth = 2;
-  //   ctx.fillText('Hello, World!', 50, 100);
-  //   ctx.strokeText('Hello, World!', 50, 100); // for stroke
-
-  //   // Save result as JPG
-  //   const buffer = canvas.toBuffer('image/jpeg');
-  //   fs.writeFileSync('output.jpg', buffer);
-  //   console.log('Saved with text: output.jpg');
-  // }
 }
