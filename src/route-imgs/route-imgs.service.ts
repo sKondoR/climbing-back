@@ -182,7 +182,9 @@ export class RouteImgsService {
       const parsedImageUrl = await page.locator('.route-portrait img')
         .getAttribute('src');
 
-      const imageUrl = parsedImageUrl.replace('.JPG', '.jpg')
+      const imageUrl = parsedImageUrl
+        .replace('.JPG', '.jpg')
+        .replace('.JPEG', '.jpeg');
       console.log(imageUrl);
 
       // Возвращаемся на предыдущую страницу
@@ -198,7 +200,8 @@ export class RouteImgsService {
       // иногда ховер не успевает сработать без ожидания
       await page.waitForTimeout(1500);
 
-      const imgLocator = page.locator(`img[src*="${imageUrl.split('.jpg')[0]}"]`);
+      const format = imageUrl.includes('.jpg') ? '.jpg' : '.jpeg';
+      const imgLocator = page.locator(`img[src*="${imageUrl.split(format)[0]}"]`);
       const imgBox = await imgLocator.boundingBox();
       if (!imgBox) {
         throw new Error('Не удалось получить координаты изображения');
