@@ -22,11 +22,12 @@ export const parseClimberInfo = (text: string): IParseClimberInfo => {
 
 export const parseClimbRegion = (text: string): string => {
   if (!text) return '';
-  const { LEAD_WORD, BOLDER_WORD, MULTI } = PARSING_WORDS;
+  const { LEAD_WORD, BOLDER_WORD, MULTI, TOP_ROPE } = PARSING_WORDS;
   const formatted = text.replaceAll('\n', '');
-  const posLead = formatted.indexOf(PARSING_WORDS.LEAD_WORD);
-  const posBold = formatted.indexOf(PARSING_WORDS.BOLDER_WORD);
-  const posMulti = formatted.indexOf(PARSING_WORDS.MULTI);
+  const posLead = formatted.indexOf(LEAD_WORD);
+  const posBold = formatted.indexOf(BOLDER_WORD);
+  const posMulti = formatted.indexOf(MULTI);
+  const posTopRope = formatted.indexOf(TOP_ROPE);
   let posEnd = 0;
   if (posLead !== -1) {
     posEnd = posLead + LEAD_WORD.length;
@@ -36,6 +37,9 @@ export const parseClimbRegion = (text: string): string => {
   }
   if (posMulti !== -1) {
     posEnd = posMulti + MULTI.length;
+  }
+  if (posTopRope !== -1) {
+    posEnd = posTopRope + TOP_ROPE.length;
   }
   return formatted.substring(posEnd).trim();
 };
